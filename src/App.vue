@@ -1,9 +1,12 @@
 <script setup>
 import { RouterView } from 'vue-router'
+// Urls : 임시용
+import Urls from '@/components/Urls.vue'
 </script>
 
 <template>
   <RouterView />
+  <Urls />
 </template>
 
 <style scoped>
