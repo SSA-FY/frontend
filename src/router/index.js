@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useMemberStore } from '@/stores/memberStore'
+
 // Pages in folder 'views'
 import Index from '@/views/Index.vue'
 import NotFound from '@/views/NotFound.vue'
@@ -54,6 +56,30 @@ const router = createRouter({
     // etc
     { path: '/:anything(.*)', component: NotFound }
   ]
+})
+
+const publicPage = ['/', '/login']
+
+const signupPage = ['/signup', '/signup-success']
+
+router.beforeEach(async (to) => {
+  const member = useMemberStore()
+
+  if (!publicPage.includes(to.path) && !member.token) {
+    const isSuccess = await member.login()
+
+    if (!isSuccess) {
+      return '/login'
+    }
+
+    if (member.tag == null) {
+      return '/signup'
+    }
+
+    if (signupPage.includes(to.path)) {
+      return '/group'
+    }
+  }
 })
 
 export default router
