@@ -12,7 +12,7 @@ const redirectMain = () => {
 
 <template>
   <div
-    class="tw-relative tw-w-full tw-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center"
+    class="tw-relative tw-w-full tw-h-[calc(100vh-42px)] tw-flex tw-flex-col tw-justify-center tw-items-center"
   >
     <h1 class="tw-text-2xl tw-font-bold">Lambda에</h1>
     <h1 class="tw-text-2xl tw-font-bold">오신 것을 환영합니다</h1>

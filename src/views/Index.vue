@@ -13,7 +13,9 @@ const redirectMain = () => {
 </script>
 
 <template>
-  <div class="tw-w-full tw-h-screen tw-flex tw-flex-col tw-justify-center tw-items-center">
+  <div
+    class="tw-w-full tw-h-[calc(100vh-42px)] tw-flex tw-flex-col tw-justify-center tw-items-center"
+  >
     <div class="tw-flex tw-justify-center">
       <LogoMark class="tw-w-[60px]" />
       <LogoText class="tw-ms-2 tw-text-[2.5rem]" />

@@ -74,12 +74,12 @@ const upload = (event) => {
 
 const remove = () => {
   me.img = null
-  me.url = 'https://storage.lambda.myeverlastinglove.com/lambda/NoImg.png'
+  me.url = 'https://storage.lambda.myeverlastinglove.com/member/NoImg.png'
 }
 </script>
 
 <template>
-  <div class="tw-w-full tw-h-screen tw-flex tw-items-center tw-pb-64">
+  <div class="tw-w-full tw-h-[calc(100vh-42px)] tw-flex tw-items-center tw-pb-64">
     <form action="" class="tw-w-4/5 tw-mx-auto tw-mt-12">
       <div class="tw-flex tw-justify-between tw-items-end">
         <div class="tw-text-center">
