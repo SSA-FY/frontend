@@ -94,7 +94,7 @@ const tagEmptyCheck = computed(() => me.tag == '' || me.tag == null)
 const tagDuplicateCheck = ref(false)
 watchEffect(async () => {
   const res = await lambda.get(`/member/${me.tag}`)
-  tagDuplicateCheck.value = res.data.data
+  tagDuplicateCheck.value = res.data
 })
 const tagCheck = computed(() => tagEmptyCheck.value || tagDuplicateCheck.value)
 
