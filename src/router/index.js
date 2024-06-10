@@ -19,7 +19,6 @@ import NotificationVote from '@/views/notification/Vote.vue'
 import NotificationInvitation from '@/views/notification/Invitation.vue'
 // in folder 'vote'
 import Vote from '@/views/vote/Vote.vue'
-import VoteFinish from '@/views/vote/Finish.vue'
 import VoteCreate from '@/views/vote/Create.vue'
 // in folder 'board'
 import BoardList from '@/views/board/List.vue'
@@ -46,7 +45,7 @@ const router = createRouter({
     { path: '/notification/invitation', component: NotificationInvitation },
     // vote
     { path: '/vote', component: Vote },
-    { path: '/vote/finish', component: VoteFinish },
+    // { path: '/vote/finish', component: VoteFinish },
     { path: '/vote/create', component: VoteCreate },
     // board
     { path: '/boards', component: BoardList },
