@@ -63,23 +63,28 @@ const publicPage = ['/', '/login']
 const signupPage = ['/signup', '/signup-success']
 
 router.beforeEach(async (to) => {
+  console.log(to)
   const member = useMemberStore()
 
-  if (!publicPage.includes(to.path) && !member.token) {
+  if (publicPage.includes(to.path)) {
+    return
+  }
+
+  if (!member.token) {
     const isSuccess = await member.login()
 
     if (!isSuccess) {
       return '/login'
     }
-
-    if (member.tag == null) {
-      return '/signup'
-    }
-
-    if (signupPage.includes(to.path)) {
-      return '/group'
-    }
   }
+
+  if (!member.tag && to.path !== '/signup') {
+    return '/signup'
+  }
+
+  // if (member.tag && signupPage.includes(to.path)) {
+  //   return '/group'
+  // }
 })
 
 export default router
