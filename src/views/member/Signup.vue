@@ -186,7 +186,7 @@ const remove = () => {
         <div class="tw-mt-4">
           <div>아이디</div>
           <div class="tw-relative" :class="{ shake: disabled.tag }">
-            <div class="tw-absolute tw-left-2 tw-bottom-2 tw-text-lg">@</div>
+            <div class="tw-absolute tw-left-2 tw-bottom-2 tw-text-lg -tw-z-10">@</div>
             <input
               type="text"
               v-model="me.tag"
