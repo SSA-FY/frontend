@@ -8,12 +8,46 @@ import BottomOrangeButton from '@/components/BottomOrangeButton.vue'
 import { lambdaAxios } from '@/utils/axios'
 
 import { useMemberStore } from '@/stores/memberStore'
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const lambda = lambdaAxios()
+
+const disabled = reactive({
+  name: false,
+  tag: false
+})
+
+const shake = (area) => {
+  if (disabled[area]) {
+    return
+  }
+
+  disabled[area] = true
+  setTimeout(() => {
+    disabled[area] = false
+  }, 1000)
+}
+
 const send = async () => {
+  if (nameCheck.value && tagCheck.value) {
+    shake('name')
+    shake('tag')
+    return
+  }
+
+  if (nameCheck.value) {
+    shake('name')
+    return
+  }
+
+  if (tagCheck.value) {
+    shake('tag')
+    return
+  }
+
   const formData = new FormData()
 
   const blob = new Blob(
@@ -30,7 +64,7 @@ const send = async () => {
   formData.append('dto', blob)
   formData.append('img', me.img)
 
-  const res = await lambdaAxios().put('/member', formData, {
+  const res = await lambda.put('/member', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -56,8 +90,13 @@ const me = reactive({
 })
 
 const nameCheck = computed(() => me.name == '' || me.name == null)
-const idCheck = computed(() => me.tag == '' || me.tag == null)
-const check = computed(() => me.name == '' || me.name == null)
+const tagEmptyCheck = computed(() => me.tag == '' || me.tag == null)
+const tagDuplicateCheck = ref(false)
+watchEffect(async () => {
+  const res = await lambda.get(`/member/${me.tag}`)
+  tagDuplicateCheck.value = res.data.data
+})
+const tagCheck = computed(() => tagEmptyCheck.value || tagDuplicateCheck.value)
 
 const upload = (event) => {
   const input = event.target
@@ -74,7 +113,7 @@ const upload = (event) => {
 
 const remove = () => {
   me.img = null
-  me.url = 'https://storage.lambda.myeverlastinglove.com/member/NoImg.png'
+  me.url = 'https://storage.lambda.myeverlastinglove.com/member/NoProfile.png'
 }
 </script>
 
@@ -120,7 +159,7 @@ const remove = () => {
               v-model="me.email"
               class="tw-ps-3 tw-h-10 tw-w-full tw-border-solid focus:tw-outline-none tw-border-[#ff7a00] tw-border-[1px] tw-rounded-sm"
             />
-            <div class="tw-flex tw-items-center tw-absolute tw-right-2 tw-bottom-2">
+            <div class="tw-absolute tw-right-2 tw-bottom-2">
               <Google v-if="'Google' == member.social" />
               <Kakao v-if="'Kakao' == member.social" />
               <Naver v-if="'Naver' == member.social" />
@@ -129,22 +168,45 @@ const remove = () => {
         </div>
         <div class="tw-mt-4 tw-relative">
           <div>이름</div>
-          <input
-            type="text"
-            v-model="me.name"
-            class="tw-ps-3 tw-mt-2 tw-h-10 tw-w-full tw-border-solid tw-border-[1px] focus:tw-outline-none tw-border-[#D0D0D0] focus:tw-border-[#ff7a00] focus:tw-border-[1px] focus:tw-rounded-sm"
-          />
+          <div :class="{ shake: disabled.name }">
+            <input
+              type="text"
+              v-model="me.name"
+              class="tw-ps-3 tw-mt-2 tw-h-10 tw-w-full tw-border-solid tw-border-[1px] focus:tw-outline-none tw-border-[#D0D0D0] focus:tw-border-[#ff7a00] focus:tw-border-[1px] focus:tw-rounded-sm"
+            />
+          </div>
+          <div
+            v-if="nameCheck"
+            class="tw-mt-2 tw-text-xs tw-text-red-500"
+            :class="{ shake: disabled.name }"
+          >
+            이름을 입력해주세요
+          </div>
         </div>
-        <div v-if="nameCheck" class="tw-mt-2 tw-text-xs tw-text-red-500">이름을 입력해주세요</div>
-        <div class="tw-mt-4 tw-relative">
+        <div class="tw-mt-4">
           <div>아이디</div>
-          <div class="tw-absolute tw-left-3 tw-top-10">@</div>
-          <input
-            type="text"
-            v-model="me.tag"
-            class="tw-bg-transparent tw-ps-7 tw-mt-2 tw-h-10 tw-w-full tw-border-solid tw-border-[1px] focus:tw-outline-none tw-border-[#D0D0D0] focus:tw-border-[#ff7a00] focus:tw-border-[1px] focus:tw-rounded-sm"
-          />
-          <div v-if="idCheck" class="tw-mt-2 tw-text-xs tw-text-red-500">아이디를 입력해주세요</div>
+          <div class="tw-relative" :class="{ shake: disabled.tag }">
+            <div class="tw-absolute tw-left-2 tw-bottom-2 tw-text-lg">@</div>
+            <input
+              type="text"
+              v-model="me.tag"
+              class="tw-bg-transparent tw-ps-7 tw-mt-2 tw-h-10 tw-w-full tw-border-solid tw-border-[1px] focus:tw-outline-none tw-border-[#D0D0D0] focus:tw-border-[#ff7a00] focus:tw-border-[1px] focus:tw-rounded-sm"
+            />
+          </div>
+          <div
+            v-if="tagEmptyCheck"
+            class="tw-mt-2 tw-text-xs tw-text-red-500"
+            :class="{ shake: disabled.tag }"
+          >
+            아이디를 입력해주세요
+          </div>
+          <div
+            v-else-if="tagDuplicateCheck"
+            class="tw-mt-2 tw-text-xs tw-text-red-500"
+            :class="{ shake: disabled.tag }"
+          >
+            이미 존재하는 아이디입니다
+          </div>
         </div>
       </div>
     </form>
@@ -152,4 +214,32 @@ const remove = () => {
   <BottomOrangeButton @click="send">가입 완료</BottomOrangeButton>
 </template>
 
-<style scoped></style>
+<style scoped>
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+</style>
