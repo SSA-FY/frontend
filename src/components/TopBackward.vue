@@ -60,6 +60,7 @@ const clickBack = () => {
 
 <style scoped>
 .s-top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,5 +84,6 @@ const clickBack = () => {
   position: absolute;
   top: 9px;
   right: 10px;
+  cursor: pointer;
 }
 </style>

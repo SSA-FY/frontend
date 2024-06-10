@@ -3,7 +3,7 @@
   v-if="모달오픈 변수" 
   @confirm="확인 누르면 동작할 함수" 
   @modal-close="모달닫기 함수"
-  @color="색깔(red)">
+  color="색깔(red)">
     <template v-slot:title>제목</template>
     <template v-slot:content>내용</template>
     <template v-slot:buttonName>확인버튼 이름</template>
@@ -18,8 +18,8 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
 </script>
 
 <template>
-  <div class="outter" @click="$emit('modalClose')">
-    <div class="inner" @click.stop>
+  <div class="s-outter" @click="$emit('modalClose')">
+    <div class="s-inner" @click.stop>
       <div class="s-title">
         <slot name="title"></slot>
       </div>
@@ -47,14 +47,14 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
 </template>
 
 <style scoped>
-.outter {
+.s-outter {
   position: fixed;
   height: 100%;
   width: 100%;
   background: #00000033;
   z-index: 500;
 }
-.inner {
+.s-inner {
   /* shadow-md */
   box-shadow:
     0 4px 6px -1px rgb(0 0 0 / 0.1),
@@ -65,7 +65,6 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
   background: #fff;
   padding: 20px;
   width: 80vw;
-  height: 200px;
   top: calc(50vh - 120px);
   left: 10vw;
   min-width: 297px;
@@ -73,7 +72,7 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
   z-index: 501;
 }
 @media screen and (min-width: 500px) {
-  .inner {
+  .s-inner {
     left: 50px;
   }
 }
@@ -85,10 +84,8 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
   margin-bottom: 10px;
 }
 .s-bottom {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  margin-top: 10px;
+  text-align: right;
+  margin-top: 20px;
 }
 .s-redButton {
   border-radius: 8px;
