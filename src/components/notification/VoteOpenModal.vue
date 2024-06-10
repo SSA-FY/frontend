@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   comment: {
@@ -11,6 +11,30 @@ const props = defineProps({
     required: true
   }
 })
+
+const isOpened = ref(false)
+
+const modalContent = ref({
+  header: props.comment,
+  body: {
+    notice: ['정말로', '마일리지를 사용하여', '친구를 열람하시겠어요?'],
+    user: {
+      name: '',
+      id: '',
+      img: ''
+    }
+  }
+})
+
+const changeModalContent = () => {
+  // Update the modal content with user information
+  isOpened.value = true
+  modalContent.value.body.user = {
+    name: '최병익',
+    id: '@byeong_ik',
+    img: '/src/assets/imgs/default-img.webp'
+  }
+}
 </script>
 
 <template>
@@ -20,16 +44,31 @@ const props = defineProps({
         <div class="modal-content">
           <div class="modal-header">
             <div class="border-bottom border-2 mb-2 ms-2 w-100">
-              <h5 class="modal-title mb-1">{{ comment }}</h5>
+              <h5 class="modal-title mb-1">{{ modalContent.header }}</h5>
             </div>
           </div>
-          <div class="modal-body mb-3 d-flex flex-column ms-2 info-msg">
-            <span>정말로</span>
-            <span>마일리지를 사용하여</span>
-            <span>친구를 열람하시겠어요?</span>
+          <div v-if="!isOpened" class="modal-body mb-3 d-flex flex-column ms-2 info-msg">
+            <span v-for="line in modalContent.body.notice" :key="line">{{ line }}</span>
+          </div>
+          <div v-else class="modal-body mb-3 d-flex flex-column ms-2 info-msg">
+            <div class="text-center d-flex align-items-center">
+              <img
+                :src="modalContent.body.user.img"
+                alt="User Image"
+                class="rounded-circle"
+                width="60"
+                height="60"
+              />
+              <div class="text-start mt-3 ms-4">
+                <h5 class="fs-4">{{ modalContent.body.user.name }}</h5>
+                <p>{{ modalContent.body.user.id }}</p>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-sm open-btn" @click="closeModal">확인</button>
+            <button type="button" class="btn btn-sm open-btn" @click="changeModalContent">
+              확인
+            </button>
             <button type="button" class="btn btn-sm close-btn ms-2" @click="closeModal">
               취소
             </button>
@@ -87,5 +126,9 @@ const props = defineProps({
 
 .info-msg {
   font-size: 18px;
+}
+
+.rounded-circle {
+  border-radius: 50%;
 }
 </style>
