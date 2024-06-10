@@ -57,6 +57,9 @@ const props = defineProps({
 .modal-dialog-centered {
   max-width: 500px;
   width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .modal-wrapper {
   background-color: white;
