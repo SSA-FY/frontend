@@ -1,12 +1,12 @@
 <script setup>
-import { defineProps, ref, computed } from 'vue'
+import { defineProps, computed } from 'vue'
 
 const props = defineProps({
-  member: Object
+  votee: Object
 })
 
 const gradientStyle = computed(
-  () => `background: linear-gradient(to right, #ff7a00, white ${props.member.percent * 100}%)`
+  () => `background: linear-gradient(to right, #ff7a00, white ${props.votee.percent * 100}%)`
 )
 </script>
 
@@ -14,7 +14,7 @@ const gradientStyle = computed(
   <div class="member-item d-flex align-items-center p-2 m-2" :style="gradientStyle">
     <img src="./background.jpg" alt="" class="avatar rounded-circle mr-2" />
     <div>
-      <div class="name ps-2">{{ member.name }}</div>
+      <div class="name ps-2">{{ votee.name }}</div>
     </div>
   </div>
 </template>

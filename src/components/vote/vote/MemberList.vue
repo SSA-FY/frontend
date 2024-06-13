@@ -2,7 +2,7 @@
 import MemberItem from '@/components/vote/vote/MemberItem.vue'
 import MemberResultItem from '@/components/vote/vote/MemberResultItem.vue'
 import { defineProps, defineEmits, ref, watch, reactive } from 'vue'
-import voteAPI from '@/apis/vote.js'
+import createVoteAPI from '@/apis/vote.js'
 
 const props = defineProps(['vote'])
 const vote = reactive({
@@ -11,11 +11,11 @@ const vote = reactive({
   imgUrl: '',
   voteWhether: false
 })
+const voteAPI = createVoteAPI()
 
-const memberId = ref(4)
-const teamId = ref(1)
-const members = ref([])
-const memberResults = ref([])
+const teamId = ref(1) //props로 받아야함
+const votees = ref([])
+const voteeResults = ref([])
 
 const initializeVote = () => {
   if (props.vote) {
@@ -43,7 +43,7 @@ const getMemberResultList = () => {
   voteAPI.getMemberResultItems(
     props.vote.voteId,
     ({ data }) => {
-      memberResults.value = data
+      voteeResults.value = data
     },
     () => {
       console.log('error')
@@ -55,7 +55,7 @@ const getMemberItemList = () => {
   voteAPI.getMemberItems(
     teamId.value,
     ({ data }) => {
-      members.value = data
+      votees.value = data
     },
     () => {
       console.log('error')
@@ -88,13 +88,17 @@ watch(
 
     <div class="d-flex flex-wrap justify-content-around">
       <template v-if="vote.voteWhether">
-        <MemberResultItem v-for="member in memberResults" :key="member.id" :member="member" />
+        <MemberResultItem
+          v-for="voteeResult in voteeResults"
+          :key="voteeResult.id"
+          :votee="voteeResult"
+        />
       </template>
       <template v-else>
         <MemberItem
-          v-for="member in members"
-          :key="member.id"
-          :member="member"
+          v-for="votee in votees"
+          :key="votee.id"
+          :votee="votee"
           :vote="props.vote"
           @do-vote="updateResult"
         />
