@@ -56,9 +56,9 @@
 
         <router-link class="list-group-item list-group-item-action" to="/vote">/vote</router-link>
 
-        <router-link class="list-group-item list-group-item-action" to="/vote/finish"
+        <!-- <router-link class="list-group-item list-group-item-action" to="/vote/finish"
           >/vote/finish</router-link
-        >
+        > -->
 
         <router-link class="list-group-item list-group-item-action s-bb" to="/vote/create"
           >/vote/create</router-link
