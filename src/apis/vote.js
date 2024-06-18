@@ -5,7 +5,7 @@ const createVoteAPI = () => {
   console.log('createVoteAPI 호출')
   return {
     createVote: (teamId, requestVoteDto, success, fail) => {
-      voteAxios.post(`/vote/teamId=${teamId}`, requestVoteDto).then(success).catch(fail)
+      voteAxios.post(`/vote?teamId=${teamId}`, requestVoteDto).then(success).catch(fail)
     },
     getVoteList: (teamId, success, fail) => {
       voteAxios.get(`/vote/list`, { params: { teamId } }).then(success).catch(fail)
