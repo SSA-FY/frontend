@@ -2,7 +2,6 @@ import { lambdaAxios } from '@/utils/axios'
 
 const createVoteAPI = () => {
   const voteAxios = lambdaAxios()
-  console.log('createVoteAPI 호출')
   return {
     createVote: (teamId, requestVoteDto, success, fail) => {
       voteAxios.post(`/vote?teamId=${teamId}`, requestVoteDto).then(success).catch(fail)
@@ -16,12 +15,12 @@ const createVoteAPI = () => {
     getMemberResultItems: (voteId, success, fail) => {
       voteAxios.get(`/vote/${voteId}`).then(success).catch(fail)
     },
-    doVote: (voteId, requestVoteDto, success, fail) => {
+    doVote: (voteId, voteeId, success, fail) => {
+      console.log(voteeId)
       voteAxios
         .post(`/vote/${voteId}`, null, {
           params: {
-            voterId: requestVoteDto.voterId,
-            voteeId: requestVoteDto.voteeId
+            voteeId: voteeId
           }
         })
         .then(success)

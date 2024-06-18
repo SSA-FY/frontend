@@ -35,7 +35,7 @@ const mileageNoti = () => {
 const doVote = () => {
   voteAPI.doVote(
     props.vote.voteId,
-    { voteeId: votee.id },
+    votee.memberId,
     () => {
       emit('doVote')
       mileageNoti()

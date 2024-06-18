@@ -97,7 +97,7 @@ watch(
       <template v-else>
         <MemberItem
           v-for="votee in votees"
-          :key="votee.id"
+          :key="votee.memberId"
           :votee="votee"
           :vote="props.vote"
           @do-vote="updateResult"
