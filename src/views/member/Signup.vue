@@ -120,9 +120,9 @@ const remove = () => {
 <template>
   <div class="tw-w-full tw-h-[calc(100vh-42px)] tw-flex tw-items-center tw-pb-64">
     <form action="" class="tw-w-4/5 tw-mx-auto tw-mt-12">
+      <div class="tw-font-bold tw-text-2xl">회원가입</div>
       <div class="tw-flex tw-justify-between tw-items-end">
         <div class="tw-text-center">
-          <div class="tw-font-bold tw-text-xl">회원가입</div>
           <input
             type="file"
             id="upload"
@@ -131,7 +131,7 @@ const remove = () => {
             @change="upload"
           />
           <label for="upload">
-            <img :src="me.url" class="tw-h-20 tw-rounded-full tw-mt-6 tw-cursor-pointer" />
+            <img :src="me.url" class="tw-h-20 tw-rounded-full tw-mt-6 tw-ms-2 tw-cursor-pointer" />
           </label>
         </div>
         <div class="tw-flex">
