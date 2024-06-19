@@ -9,6 +9,7 @@ import Login from '@/views/member/Login.vue'
 import Signup from '@/views/member/Signup.vue'
 import SignupSuccess from '@/views/member/SignupSuccess.vue'
 import Mypage from '@/views/member/Mypage.vue'
+import Edit from '@/views/member/Edit.vue'
 // in folder 'group'
 import Group from '@/views/group/Group.vue'
 import GroupCreate from '@/views/group/Create.vue'
@@ -35,6 +36,7 @@ const router = createRouter({
     { path: '/signup', component: Signup },
     { path: '/signup-success', component: SignupSuccess },
     { path: '/mypage', component: Mypage },
+    { path: '/edit', component: Edit },
     // group
     { path: '/group', component: Group },
     { path: '/group/create', component: GroupCreate },
@@ -59,10 +61,9 @@ const router = createRouter({
 
 const publicPage = ['/', '/login']
 
-const signupPage = ['/signup', '/signup-success']
+// const signupPage = ['/signup', '/signup-success']
 
 router.beforeEach(async (to) => {
-  console.log(to)
   const member = useMemberStore()
 
   if (publicPage.includes(to.path)) {
