@@ -4,17 +4,16 @@ import VoteContents from '@/components/vote/vote/VoteContents.vue'
 import TopBackward from '@/components/vote/vote/TopBackward.vue'
 import MemberList from '@/components/vote/vote/MemberList.vue'
 import Finish from '@/components/vote/finish/Finish.vue'
-import voteAPI from '@/apis/vote.js'
+import createVoteAPI from '@/apis/vote.js'
 
-const memberId = ref(4)
-const teamId = ref(1)
+const voteAPI = createVoteAPI()
+const teamId = ref(1) //props로 넘어와야 함
 const currentVote = ref(null)
 const voteList = ref([])
 const idx = ref(0)
 const len = computed(() => voteList.value.length)
 const getVoteList = () => {
   voteAPI.getVoteList(
-    memberId.value,
     teamId.value,
     ({ data }) => {
       voteList.value = data

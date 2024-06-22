@@ -1,36 +1,32 @@
 import { lambdaAxios } from '@/utils/axios'
 
-const voteAPI = lambdaAxios()
-
-const createVote = (memberId, teamId, requestVoteDto, success, fail) => {
-  voteAPI
-    .post(`/vote?memberId=${memberId}&teamId=${teamId}`, requestVoteDto)
-    .then(success)
-    .catch(fail)
+const createVoteAPI = () => {
+  const voteAxios = lambdaAxios()
+  return {
+    createVote: (teamId, requestVoteDto, success, fail) => {
+      voteAxios.post(`/vote?teamId=${teamId}`, requestVoteDto).then(success).catch(fail)
+    },
+    getVoteList: (teamId, success, fail) => {
+      voteAxios.get(`/vote/list`, { params: { teamId } }).then(success).catch(fail)
+    },
+    getMemberItems: (teamId, success, fail) => {
+      voteAxios.get(`/membership/team/${teamId}`).then(success).catch(fail)
+    },
+    getMemberResultItems: (voteId, success, fail) => {
+      voteAxios.get(`/vote/${voteId}`).then(success).catch(fail)
+    },
+    doVote: (voteId, voteeId, success, fail) => {
+      console.log(voteeId)
+      voteAxios
+        .post(`/vote/${voteId}`, null, {
+          params: {
+            voteeId: voteeId
+          }
+        })
+        .then(success)
+        .catch(fail)
+    }
+  }
 }
 
-const getVoteList = (memberId, teamId, success, fail) => {
-  voteAPI.get(`/vote/list`, { params: { memberId, teamId } }).then(success).catch(fail)
-}
-
-const getMemberItems = (teamId, success, fail) => {
-  voteAPI.get(`/membership/team/${teamId}`).then(success).catch(fail)
-}
-
-const getMemberResultItems = (voteId, success, fail) => {
-  voteAPI.get(`/vote/${voteId}`).then(success).catch(fail)
-}
-
-const doVote = (voteId, requestVoteDto, success, fail) => {
-  voteAPI
-    .post(`/vote/${voteId}`, null, {
-      params: {
-        voterId: requestVoteDto.voterId,
-        voteeId: requestVoteDto.voteeId
-      }
-    })
-    .then(success)
-    .catch(fail)
-}
-
-export default { createVote, getVoteList, getMemberItems, getMemberResultItems, doVote }
+export default createVoteAPI

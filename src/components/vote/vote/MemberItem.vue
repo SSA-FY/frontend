@@ -1,16 +1,16 @@
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue'
 import Swal from 'sweetalert2'
-import voteAPI from '@/apis/vote.js'
+import createVoteAPI from '@/apis/vote.js'
 
 const props = defineProps({
-  member: Object,
+  votee: Object,
   vote: Object
 })
 
+const voteAPI = createVoteAPI()
 const emit = defineEmits(['doVote'])
-const memberId = ref(4)
-const member = props.member
+const votee = props.votee
 
 const mileageNoti = () => {
   Swal.fire({
@@ -35,7 +35,7 @@ const mileageNoti = () => {
 const doVote = () => {
   voteAPI.doVote(
     props.vote.voteId,
-    { voterId: memberId.value, voteeId: member.id },
+    votee.memberId,
     () => {
       emit('doVote')
       mileageNoti()
@@ -51,8 +51,8 @@ const doVote = () => {
   <div class="member-item d-flex align-items-center p-2 m-2" @click="doVote">
     <img src="./background.jpg" alt="" class="avatar rounded-circle mr-2" />
     <div>
-      <div class="name ps-2">{{ member.nickname }}</div>
-      <div class="handle text-muted ps-2">@{{ member.id }}</div>
+      <div class="name ps-2">{{ votee.nickname }}</div>
+      <div class="handle text-muted ps-2">@{{ votee.id }}</div>
     </div>
   </div>
 </template>

@@ -3,15 +3,17 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Suggestions from '@/components/vote/create/Suggestions.vue'
 import VoteButton from '@/components/vote/create/VoteButton.vue'
-import voteAPI from '@/apis/vote.js'
+import createVoteAPI from '@/apis/vote.js'
+
 const selectedSuggestion = ref('')
 const question = ref('')
-const memberId = ref('')
 const teamId = ref('')
 
 const change = (payload) => {
   selectedSuggestion.value = payload
 }
+
+const voteAPI = createVoteAPI()
 
 const router = useRouter()
 
@@ -20,12 +22,9 @@ const moveGroupPage = () => {
 }
 
 const createVote = () => {
-  // memberId.value = '5a574b34-a3af-4b3c-bf7a-82376d70b853'
-  memberId.value = 1
   teamId.value = 1
   if (question.value != '') {
     voteAPI.createVote(
-      memberId.value,
       teamId.value,
       { content: question.value, backgroundUrl: 'null' },
       () => {
@@ -37,7 +36,6 @@ const createVote = () => {
     )
   } else if (selectedSuggestion.value != null && selectedSuggestion.value != '') {
     voteAPI.createVote(
-      memberId.value,
       teamId.value,
       { content: selectedSuggestion.value, backgroundUrl: 'null' },
       () => {
