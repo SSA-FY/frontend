@@ -50,6 +50,7 @@ const createVote = () => {
           :data-bs-slide-to="index"
           :aria-current="index == currentIdx.value"
           :aria-label="'Slide ' + (index + 1)"
+          disabled
         ></button>
         <button
           type="button"
@@ -67,7 +68,7 @@ const createVote = () => {
           :class="index == 0 ? 'active' : ' '"
         >
           <div class="square-container">
-            <img src="./background.jpg" class="d-block w-100 square-image" alt="..." />
+            <img :src="votee.imgUrl" class="d-block w-100 square-image" alt="..." />
             <div class="carousel-caption">
               <div class="question-text h1">
                 {{ vote.content }}
@@ -76,11 +77,17 @@ const createVote = () => {
           </div>
         </div>
         <div class="carousel-item">
-          <img src="./background.jpg" class="d-block w-100" alt="..." />
-          <div class="carousel-caption">
-            <p class="mb-2 text-black">모든 투표를 완료했어요!</p>
-            <p class="mb-3 text-black">새로운 투표를 만들어보세요!</p>
-            <button class="btn bg-orange text-white" @click="createVote">투표 만들기</button>
+          <div class="square-container">
+            <img
+              src="https://storage.lambda.myeverlastinglove.com/vote/Default.jpeg"
+              class="d-block w-100 square-image"
+              alt="..."
+            />
+            <div class="carousel-caption">
+              <p class="mb-2 text-black">모든 투표를 완료했어요!</p>
+              <p class="mb-3 text-black">새로운 투표를 만들어보세요!</p>
+              <button class="btn bg-orange text-white" @click="createVote">투표 만들기</button>
+            </div>
           </div>
         </div>
       </div>
@@ -148,8 +155,8 @@ const createVote = () => {
 .square-container {
   position: relative;
   width: 100%;
-  padding-bottom: 100%; /* 1:1 비율을 유지하기 위한 패딩 */
-  overflow: hidden; /* 이미지가 컨테이너를 벗어나지 않도록 */
+  padding-bottom: 100%;
+  overflow: hidden;
 }
 
 .square-image {
@@ -158,7 +165,7 @@ const createVote = () => {
   left: 50%;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지를 컨테이너에 맞추어 조정 */
-  transform: translate(-50%, -50%); /* 이미지의 중앙을 맞추기 위해 이동 */
+  object-fit: cover;
+  transform: translate(-50%, -50%);
 }
 </style>
