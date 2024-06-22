@@ -12,7 +12,7 @@ const gradientStyle = computed(
 
 <template>
   <div class="member-item d-flex align-items-center p-2 m-2" :style="gradientStyle">
-    <img src="./background.jpg" alt="" class="avatar rounded-circle mr-2" />
+    <img :src="props.votee.profileImgUrl" alt="" class="avatar rounded-circle mr-2" />
     <div>
       <div class="name ps-2">{{ votee.name }}</div>
     </div>
