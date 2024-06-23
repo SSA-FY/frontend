@@ -11,11 +11,10 @@ const props = defineProps({
 const voteAPI = createVoteAPI()
 const emit = defineEmits(['doVote'])
 const votee = props.votee
-
-const mileageNoti = () => {
+const mileageNoti = (point) => {
   Swal.fire({
     position: 'top-end',
-    html: '<span class="custom-text">😊 마일리지 적립 +100P</span>',
+    html: `<span class="custom-text">😊 마일리지 적립 +${point}P</span>`,
     showConfirmButton: false,
     timer: 3000,
     backdrop: false,
@@ -32,13 +31,65 @@ const mileageNoti = () => {
   })
 }
 
+const createReview = (voteInfoId) => {
+  Swal.fire({
+    html: `
+    <div class="container">
+      <div class="row my-2 mx-0">
+        <div class="d-flex justify-content-start p-0">
+        <span class="fw-bold h4">투표 완료</span>
+      </div>
+      <hr>
+      <div class="row my-2 mx-0 p-0">
+        <div class="col-8 p-0">
+          <input type="text" id="comment" class="rounded" style="height:50px" placeholder="한마디 남기기">
+        </div>
+        <div class="col-4 d-flex justify-content-end align-item-center p-0">
+          <button type="button" id="submitButton" class="btn btn-outline-primary px-1">남기기</button>
+        </div>
+      </div>
+    </div>`,
+    showCancelButton: false,
+    showConfirmButton: false,
+    showCloseButton: true,
+    allowOutsideClick: false,
+    didOpen: () => {
+      const submitButton = document.getElementById('submitButton')
+      console.log(submitButton)
+      submitButton.addEventListener('click', () => {
+        const review = document.getElementById('comment').value
+        if (!review) {
+          Swal.showValidationMessage('한마디를 남겨주세요!')
+        } else {
+          console.log('review:', review)
+          voteAPI.createReview(
+            voteInfoId,
+            {
+              voteId: props.vote.voteId,
+              review
+            },
+            () => {
+              mileageNoti(50)
+            },
+            () => {}
+          )
+        }
+      })
+    }
+  })
+}
+
 const doVote = () => {
   voteAPI.doVote(
     props.vote.voteId,
     votee.memberId,
-    () => {
-      emit('doVote')
-      mileageNoti()
+    (res) => {
+      if (res.status === 201) {
+        emit('doVote')
+        mileageNoti(100)
+        const voteInfoId = res.headers.location
+        createReview(voteInfoId)
+      }
     },
     () => {
       console.log('투표 실패')
@@ -49,7 +100,8 @@ const doVote = () => {
 
 <template>
   <div class="member-item d-flex align-items-center p-2 m-2" @click="doVote">
-    <img src="./background.jpg" alt="" class="avatar rounded-circle mr-2" />
+    <!-- :src 현재 votee에 imgUrl이 없음 /membership/team/{teamId}로 넘어오는 값에 프로필 이미지 없음 수정되면 추가하기 -->
+    <img :src="votee.imgUrl" alt="" class="avatar rounded-circle mr-2" />
     <div>
       <div class="name ps-2">{{ votee.nickname }}</div>
       <div class="handle text-muted ps-2">@{{ votee.id }}</div>
@@ -132,5 +184,9 @@ const doVote = () => {
 
 .animate__fadeOutRight {
   animation-name: fadeOutRight;
+}
+
+.outline-orange {
+  border: 1px solid #ff7a00;
 }
 </style>

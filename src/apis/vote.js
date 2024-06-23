@@ -3,8 +3,15 @@ import { lambdaAxios } from '@/utils/axios'
 const createVoteAPI = () => {
   const voteAxios = lambdaAxios()
   return {
-    createVote: (teamId, requestVoteDto, success, fail) => {
-      voteAxios.post(`/vote?teamId=${teamId}`, requestVoteDto).then(success).catch(fail)
+    createVote: (teamId, formData, success, fail) => {
+      voteAxios
+        .post(`/vote?teamId=${teamId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(success)
+        .catch(fail)
     },
     getVoteList: (teamId, success, fail) => {
       voteAxios.get(`/vote/list`, { params: { teamId } }).then(success).catch(fail)
@@ -16,7 +23,6 @@ const createVoteAPI = () => {
       voteAxios.get(`/vote/${voteId}`).then(success).catch(fail)
     },
     doVote: (voteId, voteeId, success, fail) => {
-      console.log(voteeId)
       voteAxios
         .post(`/vote/${voteId}`, null, {
           params: {
@@ -25,6 +31,9 @@ const createVoteAPI = () => {
         })
         .then(success)
         .catch(fail)
+    },
+    createReview: (voteInfoId, requestReviewDto, success, fail) => {
+      voteAxios.post(`/vote/review/${voteInfoId}`, requestReviewDto).then(success).catch(fail)
     }
   }
 }
