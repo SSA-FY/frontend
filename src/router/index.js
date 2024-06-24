@@ -51,7 +51,7 @@ const router = createRouter({
     { path: '/vote/create', component: VoteCreate },
     // board
     { path: '/boards', component: BoardList },
-    { path: '/board/:id', component: BoardDetail },
+    { path: '/board/:boardId', component: BoardDetail, props: true },
     // etc
     { path: '/:anything(.*)', component: NotFound }
   ]
