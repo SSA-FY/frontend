@@ -22,8 +22,8 @@ const createVoteAPI = () => {
     getMemberResultItems: (voteId, success, fail) => {
       voteAxios.get(`/vote/${voteId}`).then(success).catch(fail)
     },
-    doVote: (voteId, voteeId, success, fail) => {
-      voteAxios.post(`/vote/${voteId}`, { params: voteeId }).then(success).catch(fail)
+    doVote: (voteId, voteeTag, success, fail) => {
+      voteAxios.post(`/vote/${voteId}`, null, { params: { voteeTag } }).then(success).catch(fail)
     },
     createReview: (voteInfoId, requestReviewDto, success, fail) => {
       voteAxios.post(`/vote/review/${voteInfoId}`, requestReviewDto).then(success).catch(fail)
