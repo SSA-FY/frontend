@@ -82,7 +82,7 @@ const createReview = (voteInfoId) => {
 const doVote = () => {
   voteAPI.doVote(
     props.vote.voteId,
-    votee.memberId,
+    votee.memberTag,
     (res) => {
       if (res.status === 201) {
         emit('doVote')
@@ -104,7 +104,7 @@ const doVote = () => {
     <img :src="votee.imgUrl" alt="" class="avatar rounded-circle mr-2" />
     <div>
       <div class="name ps-2">{{ votee.nickname }}</div>
-      <div class="handle text-muted ps-2">@{{ votee.id }}</div>
+      <div class="handle text-muted ps-2">@{{ votee.memberTag }}</div>
     </div>
   </div>
 </template>
