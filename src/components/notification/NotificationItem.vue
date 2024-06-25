@@ -29,7 +29,7 @@ const info = computed(() => {
     case 'voteNotification':
       return {
         icon: '/src/assets/imgs/default-img.webp',
-        link: `/notification/vote?voteid=${props.voteNotification.voteId}`,
+        link: `/notification/vote/${props.voteNotification.voteId}`,
         title: '누군가 나를 선택했어요!'
       }
     case 'invitionNotification':
@@ -72,7 +72,6 @@ const info = computed(() => {
           <!-- <span class="date me-2">{{ date }}</span>  시간 넣을까 생각중-->
         </div>
         <div v-if="voteNotification" class="d-flex mt-2">
-          <!-- <RouterLink to="/notification/vote"> -->
           <img
             v-for="n in voteNotification.voteInfoItems.length"
             :key="n"
@@ -80,7 +79,6 @@ const info = computed(() => {
             alt=""
             class="vote-count-img"
           />
-          <!-- </RouterLink> -->
         </div>
       </div>
       <div v-if="type !== 'vote'">

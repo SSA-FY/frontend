@@ -43,7 +43,7 @@ const router = createRouter({
     { path: '/group/edit', component: GroupEdit },
     // notification
     { path: '/notification', component: Notification },
-    { path: '/notification/vote', component: NotificationVote },
+    { path: '/notification/vote/:voteid', component: NotificationVote },
     { path: '/notification/invitation', component: NotificationInvitation },
     // vote
     { path: '/vote', component: Vote },

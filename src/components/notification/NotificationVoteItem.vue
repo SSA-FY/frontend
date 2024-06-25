@@ -3,7 +3,7 @@ import { defineProps, ref } from 'vue'
 import VoteOpenModal from '@/components/notification/VoteOpenModal.vue'
 
 const props = defineProps({
-  user: {
+  member: {
     type: Object,
     required: false
   },
@@ -11,7 +11,7 @@ const props = defineProps({
     type: Boolean,
     required: false
   },
-  comment: {
+  opinion: {
     type: String,
     required: true
   }
@@ -33,29 +33,33 @@ function closeModal() {
   <div>
     <div class="d-flex align-items-center justify-content-between p-2 border-bottom">
       <div class="d-flex align-items-center">
-        <img :src="user ? user.profile : '/src/assets/imgs/default-img.webp'" alt="" width="40" />
+        <img
+          :src="member ? member.profile : '/src/assets/imgs/default-img.webp'"
+          alt=""
+          width="40"
+        />
         <div class="ms-3">
           <div class="d-flex flex-column">
             <div>
-              <span class="user-name" v-if="user">{{ user.name }}</span>
-              <span class="user-email" v-if="user">{{ user.email }}</span>
+              <span class="member-name" v-if="member">{{ member.name }}</span>
+              <span class="member-tag" v-if="member">@{{ member.tag }}</span>
             </div>
           </div>
-          <p class="user-comment m-0">{{ comment }}</p>
+          <p class="member-opinion m-0">{{ opinion }}</p>
         </div>
       </div>
       <button class="btn btn-sm open-btn" @click="openModal">확인</button>
     </div>
-    <VoteOpenModal v-if="showModal" :comment="comment" :closeModal="closeModal" />
+    <VoteOpenModal v-if="showModal" :opinion="opinion" :closeModal="closeModal" />
   </div>
 </template>
 
 <style scoped>
-.user-name {
+.member-name {
   font-size: 18px;
   margin-right: 10px;
 }
-.user-email {
+.member-tag {
   font-size: 18px;
 }
 .border-bottom {
@@ -74,7 +78,7 @@ function closeModal() {
   background-color: #ff7a00;
   color: white;
 }
-.user-comment {
+.member-opinion {
   display: flex;
   align-items: center;
   height: 100%;
