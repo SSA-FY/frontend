@@ -29,19 +29,19 @@ const info = computed(() => {
     case 'voteNotification':
       return {
         icon: '/src/assets/imgs/default-img.webp',
-        link: '/notification/vote',
+        link: `/notification/vote?voteid=${props.voteNotification.voteId}`,
         title: '누군가 나를 선택했어요!'
       }
     case 'invitionNotification':
       return {
         icon: '/src/assets/imgs/invitation-img.svg',
-        link: '/notification/invitation',
+        link: `/notification/invitation?teamname=${props.invitionNotification.teamName}`,
         title: '새로운 그룹에 초대되었어요!'
       }
     case 'expiredVoteNotification':
       return {
         icon: '/src/assets/imgs/vote-result-img.svg',
-        link: '/vote/finish',
+        link: `/vote/finish?voteid=${props.expiredVoteNotification.expiredVoteId}`,
         title: '결과가 나왔어요!'
       }
     default:
@@ -51,27 +51,28 @@ const info = computed(() => {
 </script>
 
 <template>
-  <div class="notification-item p-3 mb-3 border-bottom d-flex justify-content-between">
-    <div>
-      <div class="d-flex align-items-center mb-0">
-        <span class="title">{{ info.title }}</span>
-      </div>
-      <div class="d-flex align-items-center">
-        <div>
-          <span class="description" v-if="voteNotification">{{ voteNotification.voteTitle }}</span>
-          <span class="description" v-else-if="invitionNotification">{{
-            invitionNotification.teamName
-          }}</span>
-          <span class="description" v-else-if="expiredVoteNotification">{{
-            expiredVoteNotification.expiredVoteTitle
-          }}</span>
-
-          <span class="description">{{ description }}</span>
+  <RouterLink :to="info.link" style="text-decoration: none; color: inherit">
+    <div class="notification-item p-3 mb-3 border-bottom d-flex justify-content-between">
+      <div>
+        <div class="d-flex align-items-center mb-0">
+          <span class="title">{{ info.title }}</span>
         </div>
-        <!-- <span class="date me-2">{{ date }}</span>  시간 넣을까 생각중-->
-      </div>
-      <div v-if="voteNotification" class="d-flex mt-2">
-        <RouterLink to="/notification/vote">
+        <div class="d-flex align-items-center">
+          <div>
+            <span class="description" v-if="voteNotification">{{
+              voteNotification.voteTitle
+            }}</span>
+            <span class="description" v-else-if="invitionNotification">{{
+              invitionNotification.teamName
+            }}</span>
+            <span class="description" v-else-if="expiredVoteNotification">{{
+              expiredVoteNotification.expiredVoteTitle
+            }}</span>
+          </div>
+          <!-- <span class="date me-2">{{ date }}</span>  시간 넣을까 생각중-->
+        </div>
+        <div v-if="voteNotification" class="d-flex mt-2">
+          <!-- <RouterLink to="/notification/vote"> -->
           <img
             v-for="n in voteNotification.voteInfoItems.length"
             :key="n"
@@ -79,20 +80,17 @@ const info = computed(() => {
             alt=""
             class="vote-count-img"
           />
-        </RouterLink>
+          <!-- </RouterLink> -->
+        </div>
+      </div>
+      <div v-if="type !== 'vote'">
+        <img :src="info.icon" alt="Icon" width="60" height="60" />
       </div>
     </div>
-    <div v-if="type !== 'vote'">
-      <RouterLink :to="info.link">
-        <img :src="info.icon" alt="Icon" width="60" height="60" />
-      </RouterLink>
-    </div>
-  </div>
+  </RouterLink>
 </template>
 
 <style scoped>
-.notification-item {
-}
 .date {
   font-weight: bold;
   color: lightgray;
