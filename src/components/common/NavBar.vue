@@ -32,5 +32,7 @@
 nav {
   z-index: 100;
   background-color: white;
+  min-width: 350px;
+  max-width: 500px;
 }
 </style>

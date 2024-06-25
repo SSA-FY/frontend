@@ -76,7 +76,7 @@ const send = async () => {
   member.name = data.name
   member.profileImgUrl = data.profileImgUrl
 
-  router.push('/signup-success')
+  router.push('/mypage')
 }
 
 const member = useMemberStore()
@@ -93,6 +93,10 @@ const nameCheck = computed(() => me.name == '' || me.name == null)
 const tagEmptyCheck = computed(() => me.tag == '' || me.tag == null)
 const tagDuplicateCheck = ref(false)
 watchEffect(async () => {
+  if (me.tag == member.tag) {
+    return
+  }
+
   const res = await lambda.get(`/member/${me.tag}`)
   tagDuplicateCheck.value = res.data
 })
@@ -115,12 +119,16 @@ const remove = () => {
   me.img = null
   me.url = 'https://storage.lambda.myeverlastinglove.com/member/NoProfile.png'
 }
+
+const exit = async () => {
+  await lambda.delete('/member')
+}
 </script>
 
 <template>
   <div class="tw-w-full tw-h-[calc(100vh-42px)] tw-flex tw-items-center tw-pb-64">
     <form action="" class="tw-w-4/5 tw-mx-auto tw-mt-12">
-      <div class="tw-font-bold tw-text-2xl">회원가입</div>
+      <div class="tw-font-bold tw-text-2xl">개인정보 수정</div>
       <div class="tw-flex tw-justify-between tw-items-end">
         <div class="tw-text-center">
           <input
@@ -211,7 +219,13 @@ const remove = () => {
       </div>
     </form>
   </div>
-  <BottomOrangeButton @click="send">가입 완료</BottomOrangeButton>
+  <div
+    class="tw-fixed tw-bottom-14 tw-right-4 tw-text-red-600 tw-underline tw-underline-offset-4 tw-cursor-pointer"
+    @click="exit"
+  >
+    회원 탈퇴
+  </div>
+  <BottomOrangeButton @click="send">수정 완료</BottomOrangeButton>
 </template>
 
 <style scoped>

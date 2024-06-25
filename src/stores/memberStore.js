@@ -10,6 +10,7 @@ export const useMemberStore = defineStore({
     social: null,
     name: null,
     tag: null,
+    point: null,
     profileImgUrl: null
   }),
   actions: {
@@ -23,6 +24,7 @@ export const useMemberStore = defineStore({
         this.social = data.social
         this.name = data.name
         this.tag = data.tag
+        this.point = data.point
         this.profileImgUrl = data.profileImgUrl
       } catch (err) {
         return false
@@ -36,6 +38,7 @@ export const useMemberStore = defineStore({
       this.social = null
       this.name = null
       this.tag = null
+      this.point = null
       this.profileImgUrl = null
     }
   }
