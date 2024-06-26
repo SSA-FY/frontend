@@ -1,14 +1,10 @@
 <script setup>
 import { computed } from 'vue'
-import createBoardAPI from '@/apis/board.js'
-
-const boardAPI = createBoardAPI()
 
 const props = defineProps({
   item: Object
 })
 
-console.log('item:', props.item)
 const gradientStyle = computed(
   () => `background: linear-gradient(to right, #ff7a00, white ${props.item.percent}%)`
 )
