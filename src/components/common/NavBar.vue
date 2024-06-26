@@ -8,13 +8,13 @@
           <img src="/src/assets/imgs/bell-svgrepo-com.svg" width="25" alt="Bell Icon" />
         </div>
       </RouterLink>
-      <RouterLink to="/">
+      <RouterLink to="/group">
         <div class="nav-link text-center">
           <img
             class="rounded-pill"
-            src="/src/assets/imgs/default-img.webp"
+            src="/src/assets/imgs/logo_circle_800.png"
             alt="Logo"
-            width="70"
+            width="50"
             height="50"
           />
         </div>

@@ -48,5 +48,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <canvas ref="canvas" />
+  <canvas
+    class="tw-absolute tw-w-full tw-max-w-[500px] tw-h-screen tw-top-0 tw-z-100"
+    ref="canvas"
+  />
 </template>

@@ -12,7 +12,8 @@
 
 <script setup>
 import { reactive } from 'vue'
-import closeIcon from '@/assets/imgs/close.svg'
+import createInviteAPI from '@/apis/invite.js'
+const inviteAPI = createInviteAPI()
 
 const searchList = reactive([])
 const pickList = reactive([])
@@ -21,23 +22,28 @@ const memberList = defineModel('memberList', {
 })
 const { type } = defineProps(['type'])
 
-const search = (value) => {
-  //value로 검색한 결과 가져오기
+// =================================================
 
-  //searchList 배열 업데이트
-  searchList.length = 0
-  const newArr = [
-    '병익이사칭 @byeong_elk',
-    '최병익 @byeong_e1k',
-    '병익이팬클럽 @byeong_lov2',
-    '병익이팬 @byeong_love',
-    '병익 @byeong_cik',
-    '병익이 @byeong_eik',
-    '윰 @youm_0'
-  ]
-  newArr.forEach((e) => {
-    searchList.push(e)
-  })
+const search = (value) => {
+  const tag = value.target.value.trim()
+  if (tag == '') return
+  inviteAPI.searchMember(
+    tag,
+    (res) => {
+      //searchList 배열 업데이트
+      searchList.length = 0
+      const newArr = res.data
+      newArr.forEach((e) => {
+        searchList.push({
+          id: e.memberId,
+          name: e.name + ' @' + e.tag
+        })
+      })
+    },
+    () => {
+      console.log('search error')
+    }
+  )
 }
 const addThis = (value) => {
   if (!pickList.includes(value)) {
@@ -48,11 +54,18 @@ const deleteThis = (index) => {
   pickList.splice(index, 1)
 }
 
+// =================================================
+
+import { useMemberStore } from '@/stores/memberStore'
+const member = useMemberStore()
+const myId = member.memberId
+
 const finish = () => {
   if (type == 'create') {
+    const members = JSON.stringify(memberList.value)
     for (let i = pickList.length - 1; i >= 0; i--) {
       const e = pickList[i]
-      if (!memberList.value.includes(e)) {
+      if (!members.includes(e.id) && e.id != myId) {
         memberList.value.push(e)
       }
     }
@@ -70,19 +83,20 @@ const finish = () => {
       <div class="s-title">멤버 초대</div>
       <div class="s-body">
         <div class="s-searchList">
-          <input class="s-myInput" @keyup="search" />
+          <input class="s-myInput" @keyup.enter="search" />
           <div
             v-for="(value, index) in searchList"
             :key="index"
             class="s-search"
             @click="addThis(value)"
           >
-            {{ value }}
+            {{ value.name }}
           </div>
         </div>
         <div class="s-pickList">
           <div v-for="(value, index) in pickList" :key="index" class="s-pick">
-            {{ value }} <img class="s-mySvg" :src="closeIcon" @click="deleteThis(index)" />
+            {{ value.name }}
+            <img class="s-mySvg" src="/src/assets/imgs/close.svg" @click="deleteThis(index)" />
           </div>
         </div>
       </div>

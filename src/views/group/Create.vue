@@ -1,39 +1,98 @@
 <script setup>
-import addMemberIcon from '@/assets/imgs/addMember.svg'
-import pictureIcon from '@/assets/imgs/picture.svg'
-import closeIcon from '@/assets/imgs/close.svg'
+import createGroupAPI from '@/apis/group.js'
+import createInviteAPI from '@/apis/invite.js'
 
 import TopBackward from '@/components/TopBackward.vue'
 import BottomOrangeButton from '@/components/BottomOrangeButton.vue'
 import MemberInviteModal from '@/components/modals/MemberInvite.vue'
 import ConfirmModal from '@/components/modals/Confirm.vue'
 
-import { reactive, watchEffect, toRaw } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 // =================================================
-const group = reactive({ name: '첫 만남은 너무 어려워', desc: '계획대로 되는건 없어' })
+const groupAPI = createGroupAPI()
+const inviteAPI = createInviteAPI()
+
+const group = reactive({ name: '', desc: '', img: '', previewUrl: '' })
 const nickName = reactive({ nickName: '' })
 const memberList = reactive([])
-// watchEffect(() => {
-//   console.log('=========input===========')
-//   console.log(group.name)
-//   console.log(group.desc)
-//   console.log(nickName.nickName)
-//   console.log(toRaw(memberList))
-//   console.log('=========================')
-// })
+
 const deleteThis = (index) => {
   memberList.splice(index, 1)
 }
 // =================================================
 const modal = reactive({ invite: false, create: false })
-const router = useRouter()
-const buttonClick = () => {
+
+const bottomButtonClick = () => {
   // 유효성 검사
-  router.push({
-    path: '/group/create-success',
-    state: { name: group.name, desc: group.desc, url: '' }
-  })
+  if (group.name == '' || group.desc == '' || nickName.nickName == '') {
+    return
+  }
+  modal.create = true
+}
+
+// =================================================
+
+const router = useRouter()
+
+const createButtonClick = () => {
+  // 그룹 생성 요청
+  const blob = new Blob(
+    [
+      JSON.stringify({
+        teamName: group.name,
+        description: group.desc,
+        managerName: nickName.nickName
+      })
+    ],
+    { type: 'application/json' }
+  )
+
+  const formData = new FormData()
+  formData.append('dto', blob)
+  formData.append('img', group.img)
+
+  groupAPI.createGroup(
+    formData,
+    (res) => {
+      const teamId = res.data
+      // 멤버 초대 요청
+      inviteAPI.createInvites(
+        teamId,
+        memberList.map((member) => member.id),
+        () => {
+          router.push({
+            path: '/group/create-success',
+            state: { id: teamId }
+          })
+        },
+        () => {
+          alert('멤버 초대 실패! 그룹 상세 페이지에서 멤버를 다시 초대해주세요')
+          router.push({
+            path: '/group/create-success',
+            state: { id: teamId }
+          })
+        }
+      )
+    },
+    () => {
+      // TODO teamName 중복되어 그룹생성 실패한 경우 에러처리
+      alert('해당 그룹명이 이미 존재합니다')
+      modal.create = false
+    }
+  )
+}
+const imgUpload = (event) => {
+  const input = event.target
+  if (input.files) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      group.previewUrl = e.target.result
+    }
+    group.img = input.files[0]
+
+    reader.readAsDataURL(input.files[0])
+  }
 }
 </script>
 
@@ -49,7 +108,7 @@ const buttonClick = () => {
   <!-- Modal 2 -->
   <ConfirmModal
     v-if="modal.create"
-    @confirm="buttonClick"
+    @confirm="createButtonClick"
     @modal-close="modal.create = false"
     color="red"
   >
@@ -66,15 +125,22 @@ const buttonClick = () => {
   <TopBackward></TopBackward>
   <form @submit.prevent>
     <div class="s-top">
-      <img class="s-groupImg" />
-      <img class="s-pictureSvg" :src="pictureIcon" />
+      <label for="upload" class="s-label"><img class="s-groupImg" :src="group.previewUrl" /></label>
+      <input
+        type="file"
+        id="upload"
+        accept="image/png, image/gif, image/jpeg"
+        hidden
+        @change="imgUpload"
+      />
+      <!-- <img class="s-pictureSvg" src="/src/assets/imgs/picture.svg" /> -->
     </div>
     <div class="s-body">
       <label class="s-myLabel" for="inputGroupName">그룹명</label>
       <input
         type="text"
         class="s-myInput"
-        v-model="group.name"
+        v-model.trim="group.name"
         id="inputGroupName"
         maxlength="100"
       />
@@ -82,7 +148,7 @@ const buttonClick = () => {
       <input
         type="text"
         class="s-myInput"
-        v-model="group.desc"
+        v-model.trim="group.desc"
         id="inputGroupDesc"
         maxlength="100"
       />
@@ -90,32 +156,51 @@ const buttonClick = () => {
       <input
         type="text"
         class="s-myInput"
-        v-model="nickName.nickName"
+        v-model.trim="nickName.nickName"
         id="inputNickName"
         maxlength="10"
       />
       <label class="s-myLabel" for=""
         >멤버
-        <img class="s-memberSvg" :src="addMemberIcon" @click="modal.invite = true" />
+        <img
+          class="s-memberSvg"
+          src="/src/assets/imgs/addMember.svg"
+          @click="modal.invite = true"
+        />
       </label>
       <div class="s-member" v-for="(value, index) in memberList" :key="index">
-        {{ value }} <img class="s-closeSvg" :src="closeIcon" @click="deleteThis(index)" />
+        {{ value.name }}
+        <img class="s-closeSvg" src="/src/assets/imgs/close.svg" @click="deleteThis(index)" />
       </div>
     </div>
   </form>
-  <BottomOrangeButton @click="group.name ? (modal.create = true) : ''">만들기</BottomOrangeButton>
+  <BottomOrangeButton @click="bottomButtonClick">만들기</BottomOrangeButton>
 </template>
 
 <style scoped>
 .s-top {
   position: relative;
 }
-.s-groupImg {
+.s-label {
+  cursor: pointer;
   /* 16:9 */
   width: 100%;
   height: 0;
   padding-top: 56.25%;
-  background-color: #d9d9d9;
+
+  background-color: #fdfdfd;
+  filter: brightness(1);
+}
+.s-label:hover {
+  filter: brightness(0.9);
+}
+
+.s-groupImg {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  object-fit: contain;
+  max-height: 100%;
 }
 .s-pictureSvg {
   position: absolute;

@@ -24,7 +24,7 @@ const groups = ref([{ imageSrc: '/src/assets/imgs/default-img.webp', groupName: 
         <GroupItem :image-src="group.imageSrc" :group-name="group.groupName" />
       </div>
       <div class="mt-3">
-        <button type="button" class="btn rounded-pill group-btn">참여하기</button>
+        <!-- <button type="button" class="btn rounded-pill group-btn">참여하기</button> -->
         <RouterLink to="/group/create">
           <button type="button" class="btn rounded-pill ms-3 group-btn">만들기</button>
         </RouterLink>
