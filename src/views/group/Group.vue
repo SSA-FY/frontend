@@ -39,7 +39,6 @@ watchEffect(() => {
         <GroupItem :image-src="group.imgUrl" :name="group.teamName" />
       </div>
       <div class="mt-3">
-        <!-- <button type="button" class="btn rounded-pill group-btn">참여하기</button> -->
         <RouterLink to="/group/create">
           <button type="button" class="btn rounded-pill ms-3 group-btn">만들기</button>
         </RouterLink>

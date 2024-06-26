@@ -1,76 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import NavBar from '@/components/common/NavBar.vue'
 import NotificationItem from '@/components/notification/NotificationItem.vue'
+import { lambdaAxios } from '@/utils/axios'
 
-const list = ref([
-  {
-    title: 'string',
-    voteNotification: {
-      voteId: 21,
-      voteTitle: '마성의 매력이 있는 친구',
-      voteInfoItems: [
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        },
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        }
-      ]
-    },
-    dtype: 'voteNotification'
-  },
-  {
-    title: 'string',
-    voteNotification: {
-      voteId: 27,
-      voteTitle: '책을 많이 읽을 것 같은 사람',
-      voteInfoItems: [
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        },
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        },
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        },
-        {
-          voteInfoId: 0,
-          opinion: 'string',
-          isOpen: true
-        }
-      ]
-    },
-    dtype: 'voteNotification'
-  },
-  {
-    title: 'string',
-    expiredVoteNotification: {
-      expiredVoteId: 0,
-      expiredVoteTitle: '제일 귀여운 친구'
-    },
-    dtype: 'expiredVoteNotification'
-  },
-  {
-    title: 'string',
-    invitionNotification: {
-      invitationId: 0,
-      teamName: '우리들만의 공간'
-    },
-    dtype: 'invitionNotification'
-  }
-])
+const list = ref([])
+
+const lambda = lambdaAxios()
+watchEffect(() => {
+  lambda
+    .get('/notification/list?page=0')
+    .then((res) => {
+      console.log(res.data.data)
+      list.value = res.data.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+})
 </script>
 
 <template>
