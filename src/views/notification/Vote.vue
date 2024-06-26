@@ -1,40 +1,53 @@
 <script setup>
 import NotificationVoteItem from '@/components/notification/NotificationVoteItem.vue'
+import { lambdaAxios } from '@/utils/axios'
+import { ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
-const items = [
-  {
-    user: {
-      name: '최병익',
-      email: '@byeong_ik',
-      profile: '/src/assets/imgs/person-svgrepo-com.svg'
-    },
-    isOpen: true,
-    comment: '너일걸??'
-  },
-  { isOpen: false, comment: '너일걸??' },
-  { isOpen: false, comment: '너일걸??' },
-  { isOpen: false, comment: '너일걸??' },
-  { isOpen: false, comment: '너일걸??' }
-]
-const props = defineProps({
-  mainTitle: {
-    type: String,
-    required: false
-  },
-  subTitle: {
-    type: String,
-    required: false
-  }
+const route = useRoute()
+const lambda = lambdaAxios()
+
+const voteNotification = ref({})
+
+watchEffect(() => {
+  lambda
+    .get(`/voteinfo/list/${route.params.voteid}`)
+    .then((res) => {
+      console.log(res.data)
+      voteNotification.value = res.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 })
+
+const update = () => {
+  console.log('update!')
+  lambda
+    .get(`/voteinfo/list/${route.params.voteid}`)
+    .then((res) => {
+      console.log(res.data)
+      voteNotification.value = res.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
 </script>
 
 <template>
   <div class="container mt-5">
     <h1 class="main-title">나를 뽑은 사람</h1>
-    <p class="sub-title">'마성의 매력이 있는 친구'</p>
+    <p class="sub-title">{{ voteNotification.content }}</p>
     <div class="mt-4">
-      <div v-for="(item, index) in items" :key="index">
-        <NotificationVoteItem :user="item.user" :isOpen="item.isOpen" :comment="item.comment" />
+      <div v-for="item in voteNotification.responseVoteInfoToMeDtoList" :key="item.voteInfoId">
+        <NotificationVoteItem
+          :tag="item.voterTag"
+          :isOpen="item.isOpen"
+          :opinion="item.opinion"
+          :voteInfoId="item.voteInfoId"
+          @update="update"
+        />
       </div>
     </div>
   </div>

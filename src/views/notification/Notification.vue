@@ -3,32 +3,72 @@ import { ref } from 'vue'
 import NavBar from '@/components/common/NavBar.vue'
 import NotificationItem from '@/components/notification/NotificationItem.vue'
 
-const notis = ref([
+const list = ref([
   {
-    date: '2023.10.13',
-    title: '누군가 나를 선택했어요!',
-    description: '마성의 매력이 있는 친구',
-    type: 'vote',
-    count: 2
+    title: 'string',
+    voteNotification: {
+      voteId: 21,
+      voteTitle: '마성의 매력이 있는 친구',
+      voteInfoItems: [
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        },
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        }
+      ]
+    },
+    dtype: 'voteNotification'
   },
   {
-    date: '2023.10.13',
-    title: '누군가 나를 선택했어요!',
-    description: '책을 많이 읽을 것 같은 사람',
-    type: 'vote',
-    count: 4
+    title: 'string',
+    voteNotification: {
+      voteId: 27,
+      voteTitle: '책을 많이 읽을 것 같은 사람',
+      voteInfoItems: [
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        },
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        },
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        },
+        {
+          voteInfoId: 0,
+          opinion: 'string',
+          isOpen: true
+        }
+      ]
+    },
+    dtype: 'voteNotification'
   },
   {
-    date: '2023.10.13',
-    title: '결과가 나왔어요!',
-    description: '제일 귀여운 친구',
-    type: 'vote-result'
+    title: 'string',
+    expiredVoteNotification: {
+      expiredVoteId: 0,
+      expiredVoteTitle: '제일 귀여운 친구'
+    },
+    dtype: 'expiredVoteNotification'
   },
   {
-    date: '2023.10.12',
-    title: '새로운 그룹에 초대되었어요!',
-    description: '우리들만의 공간',
-    type: 'invitation'
+    title: 'string',
+    invitionNotification: {
+      invitationId: 0,
+      teamName: '우리들만의 공간'
+    },
+    dtype: 'invitionNotification'
   }
 ])
 </script>
@@ -39,16 +79,15 @@ const notis = ref([
       <p>My News</p>
     </div>
     <div class="text-center mt-5">
-      <div v-if="notis.length === 0" class="mt-5">
+      <div v-if="list.length === 0" class="mt-5">
         <h4>아직 새로운 소식이 없어요</h4>
       </div>
-      <div v-for="(noti, index) in notis" :key="index">
+      <div v-for="(noti, index) in list" :key="index">
         <NotificationItem
-          :date="noti.date"
-          :title="noti.title"
-          :description="noti.description"
-          :type="noti.type"
-          :count="noti.count"
+          :type="noti.dtype"
+          :expired-vote-notification="noti.expiredVoteNotification"
+          :invition-notification="noti.invitionNotification"
+          :vote-notification="noti.voteNotification"
         />
       </div>
     </div>

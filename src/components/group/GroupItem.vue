@@ -6,7 +6,7 @@ const props = defineProps({
     type: String,
     required: true
   },
-  groupName: {
+  name: {
     type: String,
     required: true
   }
@@ -14,12 +14,18 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="d-flex align-items-center p-2 mb-2">
-    <img :src="imageSrc" class="rounded-circle me-3" alt="Group Image" width="60" height="60" />
-    <div class="group-item d-flex align-items-center flex-grow-1 px-3 py-2">
-      <span>{{ groupName }}</span>
+  <RouterLink
+    class=""
+    style="text-decoration: none; color: inherit"
+    :to="{ path: '/group/detail', query: { name: props.name } }"
+  >
+    <div class="d-flex align-items-center p-2 mb-2">
+      <img :src="imageSrc" class="rounded-circle me-3" alt="Group Image" width="60" height="60" />
+      <div class="group-item d-flex align-items-center flex-grow-1 px-3 py-2">
+        <span>{{ name }}</span>
+      </div>
     </div>
-  </div>
+  </RouterLink>
 </template>
 
 <style scoped>

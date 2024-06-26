@@ -1,9 +1,24 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import GroupItem from '@/components/group/GroupItem.vue'
 import NavBar from '@/components/common/NavBar.vue'
+import { lambdaAxios } from '@/utils/axios'
 
-const groups = ref([{ imageSrc: '/src/assets/imgs/default-img.webp', groupName: 'default group' }])
+const groups = ref([{ imgUrl: '/src/assets/imgs/default-img.webp', teamName: 'default group' }])
+
+const lambda = lambdaAxios()
+
+watchEffect(() => {
+  lambda
+    .get('/team')
+    .then((teamList) => {
+      console.log(teamList)
+      groups.value = teamList.data
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+})
 </script>
 
 <template>
@@ -17,11 +32,11 @@ const groups = ref([{ imageSrc: '/src/assets/imgs/default-img.webp', groupName: 
         <p>
           기존 그룹에 참여하거나
           <br />
-          새로운 그룹을 직접 만들어보세요.
+          새로운 그룹을 직접 만들어보세요e.
         </p>
       </div>
-      <div v-for="group in groups" :key="group.groupName">
-        <GroupItem :image-src="group.imageSrc" :group-name="group.groupName" />
+      <div v-for="group in groups" :key="group.teamName">
+        <GroupItem :image-src="group.imgUrl" :name="group.teamName" />
       </div>
       <div class="mt-3">
         <!-- <button type="button" class="btn rounded-pill group-btn">참여하기</button> -->

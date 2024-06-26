@@ -1,39 +1,45 @@
 <script setup>
+import { lambdaAxios } from '@/utils/axios'
 import { ref } from 'vue'
 
 const props = defineProps({
-  comment: {
+  opinion: {
     type: String,
     required: true
   },
   closeModal: {
     type: Function,
     required: true
+  },
+  voteInfoId: {
+    type: Number,
+    required: true
+  },
+  member: {
+    type: Object,
+    required: false
   }
 })
+const lambda = lambdaAxios()
 
 const isOpened = ref(false)
 
 const modalContent = ref({
-  header: props.comment,
+  header: props.opinion,
   body: {
     notice: ['정말로', '마일리지를 사용하여', '친구를 열람하시겠어요?'],
-    user: {
-      name: '',
-      id: '',
-      img: ''
-    }
+    member: {}
   }
 })
 
+const emit = defineEmits(['open-vote'])
+
 const changeModalContent = () => {
-  // Update the modal content with user information
-  isOpened.value = true
-  modalContent.value.body.user = {
-    name: '최병익',
-    id: '@byeong_ik',
-    img: '/src/assets/imgs/default-img.webp'
-  }
+  if (isOpened.value) props.closeModal()
+  lambda.put(`/voteinfo/open/${props.voteInfoId}`).then(() => {
+    isOpened.value = true
+    emit('open-vote')
+  })
 }
 </script>
 
@@ -50,18 +56,15 @@ const changeModalContent = () => {
           <div v-if="!isOpened" class="modal-body mb-3 d-flex flex-column ms-2 info-msg">
             <span v-for="line in modalContent.body.notice" :key="line">{{ line }}</span>
           </div>
-          <div v-else class="modal-body mb-3 d-flex flex-column ms-2 info-msg">
+          <div
+            v-else-if="props.member.name"
+            class="modal-body mb-3 d-flex flex-column ms-2 info-msg"
+          >
             <div class="text-center d-flex align-items-center">
-              <img
-                :src="modalContent.body.user.img"
-                alt="User Image"
-                class="rounded-circle"
-                width="60"
-                height="60"
-              />
+              <img :src="props.member.img" class="rounded-circle" width="60" height="60" />
               <div class="text-start mt-3 ms-4">
-                <h5 class="fs-4">{{ modalContent.body.user.name }}</h5>
-                <p>{{ modalContent.body.user.id }}</p>
+                <h5 class="fs-4">{{ props.member.name }}</h5>
+                <p>@{{ props.member.tag }}</p>
               </div>
             </div>
           </div>

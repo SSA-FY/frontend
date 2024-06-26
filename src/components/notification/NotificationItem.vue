@@ -2,18 +2,6 @@
 import { defineProps, computed } from 'vue'
 
 const props = defineProps({
-  date: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
   type: {
     type: String,
     required: true
@@ -21,17 +9,41 @@ const props = defineProps({
   count: {
     type: Number,
     required: false
+  },
+  expiredVoteNotification: {
+    type: Object,
+    required: false
+  },
+  invitionNotification: {
+    type: Object,
+    required: false
+  },
+  voteNotification: {
+    type: Object,
+    required: false
   }
 })
 
 const info = computed(() => {
   switch (props.type) {
-    case 'vote':
-      return { icon: '/src/assets/imgs/default-img.webp', link: '/notification/vote' }
-    case 'invitation':
-      return { icon: '/src/assets/imgs/invitation-img.svg', link: '/notification/invitation' }
-    case 'vote-result':
-      return { icon: '/src/assets/imgs/vote-result-img.svg', link: '/vote/finish' }
+    case 'voteNotification':
+      return {
+        icon: '/src/assets/imgs/default-img.webp',
+        link: `/notification/vote/${props.voteNotification.voteId}`,
+        title: '누군가 나를 선택했어요!'
+      }
+    case 'invitionNotification':
+      return {
+        icon: '/src/assets/imgs/invitation-img.svg',
+        link: `/notification/invitation?teamname=${props.invitionNotification.teamName}`,
+        title: '새로운 그룹에 초대되었어요!'
+      }
+    case 'expiredVoteNotification':
+      return {
+        icon: '/src/assets/imgs/vote-result-img.svg',
+        link: `/vote/finish?voteid=${props.expiredVoteNotification.expiredVoteId}`,
+        title: '결과가 나왔어요!'
+      }
     default:
       return '/src/assets/imgs/default-img.webp'
   }
@@ -39,40 +51,44 @@ const info = computed(() => {
 </script>
 
 <template>
-  <div class="notification-item p-3 mb-3 border-bottom d-flex justify-content-between">
-    <div>
-      <div class="d-flex align-items-center mb-0">
-        <span class="title">{{ title }}</span>
-      </div>
-      <div class="d-flex align-items-center">
-        <div>
-          <span class="description">{{ description }}</span>
+  <RouterLink :to="info.link" style="text-decoration: none; color: inherit">
+    <div class="notification-item p-3 mb-3 border-bottom d-flex justify-content-between">
+      <div>
+        <div class="d-flex align-items-center mb-0">
+          <span class="title">{{ info.title }}</span>
         </div>
-        <!-- <span class="date me-2">{{ date }}</span>  시간 넣을까 생각중-->
-      </div>
-      <div v-if="count" class="d-flex mt-2">
-        <RouterLink to="/notification/vote">
+        <div class="d-flex align-items-center">
+          <div>
+            <span class="description" v-if="voteNotification">{{
+              voteNotification.voteTitle
+            }}</span>
+            <span class="description" v-else-if="invitionNotification">{{
+              invitionNotification.teamName
+            }}</span>
+            <span class="description" v-else-if="expiredVoteNotification">{{
+              expiredVoteNotification.expiredVoteTitle
+            }}</span>
+          </div>
+          <!-- <span class="date me-2">{{ date }}</span>  시간 넣을까 생각중-->
+        </div>
+        <div v-if="voteNotification" class="d-flex mt-2">
           <img
-            v-for="n in count"
+            v-for="n in voteNotification.voteInfoItems.length"
             :key="n"
             src="/src/assets/imgs/person-svgrepo-com.svg"
             alt=""
             class="vote-count-img"
           />
-        </RouterLink>
+        </div>
+      </div>
+      <div v-if="type !== 'vote'">
+        <img :src="info.icon" alt="Icon" width="60" height="60" />
       </div>
     </div>
-    <div v-if="type !== 'vote'">
-      <RouterLink :to="info.link">
-        <img :src="info.icon" alt="Icon" width="60" height="60" />
-      </RouterLink>
-    </div>
-  </div>
+  </RouterLink>
 </template>
 
 <style scoped>
-.notification-item {
-}
 .date {
   font-weight: bold;
   color: lightgray;
