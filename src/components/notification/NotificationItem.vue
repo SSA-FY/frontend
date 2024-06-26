@@ -26,19 +26,19 @@ const props = defineProps({
 
 const info = computed(() => {
   switch (props.type) {
-    case 'voteNotification':
+    case 'Vote':
       return {
         icon: '/src/assets/imgs/default-img.webp',
         link: `/notification/vote/${props.voteNotification.voteId}`,
         title: '누군가 나를 선택했어요!'
       }
-    case 'invitionNotification':
+    case 'Invitation':
       return {
         icon: '/src/assets/imgs/invitation-img.svg',
         link: `/notification/invitation?teamname=${props.invitionNotification.teamName}`,
         title: '새로운 그룹에 초대되었어요!'
       }
-    case 'expiredVoteNotification':
+    case 'ExpiredVote':
       return {
         icon: '/src/assets/imgs/vote-result-img.svg',
         link: `/vote/finish?voteid=${props.expiredVoteNotification.expiredVoteId}`,
