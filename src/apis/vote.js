@@ -27,6 +27,9 @@ const createVoteAPI = () => {
     },
     createReview: (voteInfoId, requestReviewDto, success, fail) => {
       voteAxios.post(`/vote/review/${voteInfoId}`, requestReviewDto).then(success).catch(fail)
+    },
+    getTodayInfo: (success, fail) => {
+      voteAxios.get(`/voteinfo/today`).then(success).catch(fail)
     }
   }
 }
