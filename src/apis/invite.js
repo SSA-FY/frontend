@@ -6,9 +6,9 @@ const createInviteAPI = () => {
     searchMember: (tag, success, fail) => {
       inviteAxios.get(`/member/search?tag=${encodeURIComponent(tag)}`).then(success).catch(fail)
     },
-    createInvites: (teamId, memberList, success, fail) => {
+    createInvites: (teamName, memberList, success, fail) => {
       inviteAxios
-        .post(`/invitation?teamId=${teamId}`, memberList )
+        .post(`/invitation`, memberList, { params: { teamName } })
         .then(success)
         .catch(fail)
     },

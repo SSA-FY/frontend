@@ -13,9 +13,10 @@ const buttonClick = () => {
   router.push('/group')
 }
 
-const teamId = window.history.state.id
+const teamName = window.history.state.name
+// const teamName = 'jdk'
 
-if (teamId == undefined) {
+if (teamName == undefined) {
   router.push('/group')
 }
 
@@ -25,7 +26,7 @@ const group = reactive({ name: '', desc: '', img: '' })
 const groupAPI = createGroupAPI()
 
 groupAPI.getGroupInfo(
-  teamId,
+  teamName,
   (res) => {
     const groupInfo = res.data
     group.name = groupInfo.teamName

@@ -55,22 +55,21 @@ const createButtonClick = () => {
   groupAPI.createGroup(
     formData,
     (res) => {
-      const teamId = res.data
       // 멤버 초대 요청
       inviteAPI.createInvites(
-        teamId,
+        group.name,
         memberList.map((member) => member.id),
         () => {
           router.push({
             path: '/group/create-success',
-            state: { id: teamId }
+            state: { name: group.name }
           })
         },
         () => {
           alert('멤버 초대 실패! 그룹 상세 페이지에서 멤버를 다시 초대해주세요')
           router.push({
             path: '/group/create-success',
-            state: { id: teamId }
+            state: { name: group.name }
           })
         }
       )
