@@ -7,7 +7,7 @@ const list = ref([
   {
     title: 'string',
     voteNotification: {
-      voteId: 0,
+      voteId: 21,
       voteTitle: '마성의 매력이 있는 친구',
       voteInfoItems: [
         {
@@ -27,7 +27,7 @@ const list = ref([
   {
     title: 'string',
     voteNotification: {
-      voteId: 0,
+      voteId: 27,
       voteTitle: '책을 많이 읽을 것 같은 사람',
       voteInfoItems: [
         {
