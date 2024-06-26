@@ -1,9 +1,5 @@
 <script setup>
-import editIcon from '@/assets/imgs/edit.svg'
-import leaveIcon from '@/assets/imgs/leave.svg'
-import successIcon from '@/assets/imgs/success.svg'
-import addMemberIcon from '@/assets/imgs/addMember.svg'
-import docPencilIcon from '@/assets/imgs/docPencil.svg'
+import createGroupAPI from '@/apis/group.js'
 
 import BottomOrangeButton from '@/components/BottomOrangeButton.vue'
 import TopBackward from '@/components/TopBackward.vue'
@@ -13,38 +9,105 @@ import SingleOkModal from '@/components/modals/SingleOk.vue'
 import SimpleOkModal from '@/components/modals/SimpleOk.vue'
 
 import { reactive, watchEffect, toRaw } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+const teamName = route.query.name
+if (teamName == undefined) {
+  router.push({
+    path: '/group'
+  })
+}
+
 // =================================================
-const groupInfo = reactive({
-  id: 1,
-  name: '싸피 11반 11기',
-  desc: '안녕하세요! 싸피 11반 11기 투표방입니다!',
-  leader: '냥냥이@cat'
+
+const group = reactive({
+  id: undefined,
+  name: '',
+  desc: '',
+  img: '',
+  managerTag: '',
+  managerName: ''
 })
-const memberList = reactive({
-  myName: '냥냥이@cat',
-  other: [
-    '병익이사칭 @byeong_elk',
-    '최병익 @byeong_e1k',
-    '병익이팬클럽 @byeong_lov2',
-    '병익이팬 @byeong_love',
-    '병익 @byeong_cik',
-    '병익이 @byeong_eik',
-    '윰 @youm_0'
-  ]
-})
-const newName = reactive({ name: '' })
-const changeName = () => {
-  // TODO: 이름 변경 기능 구현
-  if (newName.name.length > 0) {
-    console.log('이름변경!')
-    check.impossible = true
+const groupAPI = createGroupAPI()
+
+groupAPI.getGroupInfo(
+  teamName,
+  (res) => {
+    const groupInfo = res.data
+    group.id = groupInfo.teamId
+    group.name = groupInfo.teamName
+    group.desc = groupInfo.description
+    group.img = groupInfo.imgUrl
+    group.managerTag = groupInfo.managerTag
+    group.managerName = groupInfo.managerName
+    getMembers()
+  },
+  () => {
+    console.log('error')
   }
+)
+
+// =================================================
+
+import { useMemberStore } from '@/stores/memberStore'
+const my = useMemberStore()
+const myTag = my.tag
+const myName = reactive({ current: '', new: '' })
+
+const changeName = () => {
+  console.log(myName)
+  // TODO: patch 에러 해결
+  if (myName.new.length > 0) {
+    console.log('이름변경!')
+
+    groupAPI.changeMyname(
+      myName.new,
+      teamName,
+      (res) => {
+        console.res
+      },
+      (err) => {
+        console.log(err)
+        check.impossible = true
+      }
+    )
+  }
+}
+// =================================================
+
+const memberList = reactive([])
+
+const getMembers = async () => {
+  groupAPI.getMembers(
+    teamName,
+    (res) => {
+      const members = res.data
+      members.forEach((m) => {
+        if (m.memberTag == myTag) {
+          myName.current = m.nickname
+        } else if (m.memberTag != group.managerTag) {
+          memberList.push(m)
+        }
+      })
+
+      // 이 그룹 멤버가 아니면
+      if (myName.current == '') {
+        router.push({
+          path: '/group'
+        })
+      }
+    },
+    (err) => {
+      console.log(err)
+    }
+  )
 }
 // =================================================
 const modal = reactive({ invite: false, leave: false })
 const check = reactive({ editing: false, impossible: false, single: false, simple: false })
-const router = useRouter()
 const buttonClick = () => {
   router.push({
     path: '/boards'
@@ -54,8 +117,21 @@ const buttonClick = () => {
 const leaveGroup = () => {
   // TODO: group 나가기 기능 구현
   modal.leave = false
-  if (groupInfo.leader == memberList.myName) {
+
+  if (group.managerTag == myTag && memberList.lengt > 0) {
     modal.simple = true
+  } else {
+    groupAPI.leaveGroup(
+      teamName,
+      () => {
+        router.push({
+          path: '/group'
+        })
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
   }
 }
 </script>
@@ -87,7 +163,7 @@ const leaveGroup = () => {
     <template v-slot:title>그룹 나가기</template>
     <template v-slot:content>
       정말로<br />
-      '{{ groupInfo.name }}' 그룹을<br />
+      '{{ group.name }}' 그룹을<br />
       나가시겠어요?
     </template>
     <template v-slot:buttonName>나가기</template>
@@ -98,60 +174,68 @@ const leaveGroup = () => {
   >
   <!-- Page -->
   <TopBackward>
-    <template v-slot:right> <img :src="leaveIcon" @click="modal.leave = true" /></template
+    <template v-slot:right>
+      <img src="/src/assets/imgs/leave.svg" @click="modal.leave = true" /></template
   ></TopBackward>
-  <form @submit.prevent>
+  <form @submit.prevent v-if="group.id != undefined">
     <div class="s-top">
-      <img class="s-myImg" />
+      <div class="s-imgContainer"><img class="s-myImg" :src="group.img" /></div>
       <div class="s-title">
-        <h3 class="s-groupName">{{ groupInfo.name }}</h3>
-        <h5 class="s-desc">{{ groupInfo.desc }}</h5>
+        <h3 class="s-groupName">{{ group.name }}</h3>
+        <h5 class="s-desc">{{ group.desc }}</h5>
       </div>
       <img
-        v-if="groupInfo.leader == memberList.myName"
+        v-if="group.managerTag == myTag"
         class="s-pencilSvg"
         @click="
           $router.push({
             path: '/group/edit',
-            state: { id: groupInfo.id }
+            state: { name: group.name }
           })
         "
-        :src="docPencilIcon"
+        src="/src/assets/imgs/docPencil.svg"
       />
     </div>
     <div class="s-body">
       <div class="s-myLabel" for="inputGroupName">그룹장</div>
       <div class="s-me">
-        <div v-if="check.editing && groupInfo.leader == memberList.myName">
-          <input class="s-nameInput" v-model="newName.name" :placeholder="memberList.myName" />
-          <img class="s-edit" @click="changeName" :src="successIcon" />
+        <div v-if="check.editing && group.managerTag == myTag">
+          <input class="s-nameInput" v-model="myName.new" :placeholder="group.managerName" />
+          <img class="s-edit" @click="changeName" src="/src/assets/imgs/success.svg" />
           <div v-if="check.impossible" class="s-redLine">이미 존재하는 닉네임입니다</div>
         </div>
         <div v-else class="s-name">
-          {{ memberList.myName }}
+          {{ group.managerName }} @{{ group.managerTag }}
           <img
-            v-if="groupInfo.leader == memberList.myName"
+            v-if="group.managerTag == myTag"
             class="s-edit"
             @click="check.editing = true"
-            :src="editIcon"
+            src="/src/assets/imgs/edit.svg"
           />
         </div>
       </div>
       <div class="s-myLabel" for="inputGroupDesc">멤버</div>
       <div>
-        <div v-if="groupInfo.leader != memberList.myName" class="s-me">
+        <div v-if="group.managerTag != myTag" class="s-me">
           <div v-if="check.editing">
-            <input class="s-nameInput" v-model="newName.name" :placeholder="memberList.myName" />
-            <img class="s-edit" @click="changeName" :src="successIcon" />
+            <input class="s-nameInput" v-model="myName.new" :placeholder="myName.current" />
+            <img class="s-edit" @click="changeName" src="/src/assets/imgs/success.svg" />
             <div v-if="check.impossible" class="s-redLine">이미 존재하는 닉네임입니다</div>
           </div>
           <div v-else class="s-name">
-            {{ memberList.myName }}
-            <img class="s-edit" @click="check.editing = true" :src="editIcon" />
+            {{ myName.current }} @{{ myTag }}
+            <img class="s-edit" @click="check.editing = true" src="/src/assets/imgs/edit.svg" />
           </div>
         </div>
-        <img v-else class="s-memberSvg" :src="addMemberIcon" @click="modal.invite = true" />
-        <div class="s-name" v-for="member in memberList.other" key="member">{{ member }}</div>
+        <img
+          v-else
+          class="s-memberSvg"
+          src="/src/assets/imgs/addMember.svg"
+          @click="modal.invite = true"
+        />
+        <div class="s-name" v-for="m in memberList" key="member">
+          {{ m.nickname }} @{{ m.memberTag }}
+        </div>
       </div>
     </div>
   </form>
@@ -163,12 +247,22 @@ const leaveGroup = () => {
 .s-top {
   position: relative;
 }
-.s-myImg {
+.s-imgContainer {
+  position: relative;
   /* 16:9 */
   width: 100%;
   height: 0;
   padding-top: 56.25%;
-  background-color: #d9d9d9;
+  border: solid 1px #d9d9d9;
+  border-left: none;
+  background-color: #fdfdfd;
+}
+.s-myImg {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  object-fit: contain;
+  max-height: 100%;
 }
 .s-title {
   position: absolute;
