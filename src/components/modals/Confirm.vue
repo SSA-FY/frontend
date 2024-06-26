@@ -92,7 +92,7 @@ const colorCode = props.color == 'red' ? '#fe2c2c' : '#ff7a00'
   color: white;
   margin-right: 4px;
   padding: 3px 10px;
-  width: 65px;
+  /* width: 65px; */
   border: solid 1px;
 }
 .s-cancelButton {
