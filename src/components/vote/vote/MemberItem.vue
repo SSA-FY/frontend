@@ -11,7 +11,7 @@ const props = defineProps({
 const voteAPI = createVoteAPI()
 const emit = defineEmits(['doVote'])
 const votee = props.votee
-const mileageNoti = (point) => {
+const pointNoti = (point) => {
   Swal.fire({
     position: 'top-end',
     html: `<span class="custom-text">😊 마일리지 적립 +${point}P</span>`,
@@ -69,7 +69,7 @@ const createReview = (voteInfoId) => {
               review
             },
             () => {
-              mileageNoti(50)
+              pointNoti(50)
             },
             () => {}
           )
@@ -86,7 +86,7 @@ const doVote = () => {
     (res) => {
       if (res.status === 201) {
         emit('doVote')
-        mileageNoti(100)
+        pointNoti(100)
         const voteInfoId = res.headers.location
         createReview(voteInfoId)
       }
