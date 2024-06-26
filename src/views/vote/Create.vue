@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router'
 import Suggestions from '@/components/vote/create/Suggestions.vue'
 import VoteButton from '@/components/vote/create/VoteButton.vue'
 import createVoteAPI from '@/apis/vote.js'
+import NavBar from '@/components/common/NavBar.vue'
+import TopBackward from '@/components/vote/vote/TopBackward.vue'
 
 const imgUrl = ref('https://storage.lambda.myeverlastinglove.com/vote/Default.jpeg')
 const imgFile = ref(null)
@@ -65,10 +67,9 @@ const upload = (event) => {
 </script>
 
 <template>
-  <div class="card-header">그룹 이름</div>
-
-  <div class="card">
-    <div class="card-body mt-3">
+  <TopBackward></TopBackward>
+  <div class="container">
+    <div class="mt-3">
       <h5 class="card-title text-secondary ps-3">친구들에게 물어볼 질문을</h5>
       <h5 class="card-title text-secondary ps-3">직접 만들어보세요🚀</h5>
 
@@ -100,12 +101,16 @@ const upload = (event) => {
         </div>
       </div>
       <Suggestions v-model="selectedSuggestion" @selectSuggestions="change" />
+      <VoteButton class="p-0" @click="createVote">투표 생성</VoteButton>
     </div>
-    <VoteButton class="p-0" @click="createVote">투표 생성</VoteButton>
+    <NavBar />
   </div>
 </template>
 
 <style scoped>
+.container {
+  min-height: 90vh;
+}
 .card {
   border: 0px;
   margin-top: 20px;

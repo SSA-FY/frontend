@@ -15,8 +15,7 @@
   transform: translateX(-1px);
   max-width: 500px;
   width: 100%;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
+  border-radius: 10px;
   height: 42px;
   color: white;
   font-size: 22px;

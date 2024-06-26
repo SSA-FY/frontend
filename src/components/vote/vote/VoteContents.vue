@@ -68,7 +68,7 @@ const createVote = () => {
           :class="index == 0 ? 'active' : ' '"
         >
           <div class="square-container">
-            <img :src="votee.imgUrl" class="d-block w-100 square-image" alt="..." />
+            <img :src="vote.imgUrl" class="d-block w-100 square-image" alt="..." />
             <div class="carousel-caption">
               <div class="question-text h1">
                 {{ vote.content }}

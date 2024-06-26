@@ -1,7 +1,7 @@
 <script setup>
 import MemberItem from '@/components/vote/vote/MemberItem.vue'
 import MemberResultItem from '@/components/vote/vote/MemberResultItem.vue'
-import { defineProps, defineEmits, ref, watch, reactive } from 'vue'
+import { ref, watch, reactive } from 'vue'
 import createVoteAPI from '@/apis/vote.js'
 
 const props = defineProps(['vote'])
@@ -78,7 +78,7 @@ watch(
 )
 </script>
 <template>
-  <div class="user-list mt-5">
+  <div class="p-2 mt-1">
     <template v-if="vote.voteWhether">
       <h2 class="fw-bold">실시간 결과 <span class="emoji">🔥</span></h2>
     </template>
@@ -108,9 +108,6 @@ watch(
 </template>
 
 <style scoped>
-.user-list {
-  padding: 20px;
-}
 h2 {
   font-size: 1.2rem;
   margin-bottom: 20px;
