@@ -1,5 +1,8 @@
 <script setup>
 import { defineProps, computed } from 'vue'
+import invitationImg from '@/assets/imgs/invitation-img.svg'
+import expiredVoteImg from '/src/assets/imgs/vote-result-img.svg'
+import VoteImg from '/src/assets/imgs/default-img.webp'
 
 const props = defineProps({
   type: {
@@ -28,24 +31,24 @@ const info = computed(() => {
   switch (props.type) {
     case 'Vote':
       return {
-        icon: '/src/assets/imgs/default-img.webp',
+        icon: VoteImg,
         link: `/notification/vote/${props.voteNotification.voteId}`,
         title: '누군가 나를 선택했어요!'
       }
     case 'Invitation':
       return {
-        icon: '/src/assets/imgs/invitation-img.svg',
+        icon: invitationImg,
         link: `/notification/invitation?teamname=${props.invitionNotification.teamName}`,
         title: '새로운 그룹에 초대되었어요!'
       }
     case 'ExpiredVote':
       return {
-        icon: '/src/assets/imgs/vote-result-img.svg',
+        icon: expiredVoteImg,
         link: `/vote/finish?voteid=${props.expiredVoteNotification.expiredVoteId}`,
         title: '결과가 나왔어요!'
       }
     default:
-      return '/src/assets/imgs/default-img.webp'
+      return VoteImg
   }
 })
 </script>
