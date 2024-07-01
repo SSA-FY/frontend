@@ -4,7 +4,7 @@ import GroupItem from '@/components/group/GroupItem.vue'
 import NavBar from '@/components/common/NavBar.vue'
 import { lambdaAxios } from '@/utils/axios'
 
-const groups = ref([{ imgUrl: '/src/assets/imgs/default-img.webp', teamName: 'default group' }])
+const groups = ref([])
 
 const lambda = lambdaAxios()
 
@@ -36,7 +36,11 @@ watchEffect(() => {
         </p>
       </div>
       <div v-for="group in groups" :key="group.teamName">
-        <GroupItem :image-src="group.imgUrl" :name="group.teamName" />
+        <GroupItem
+          :image-src="group.imgUrl"
+          :name="group.teamName"
+          :vote-whether="group.voteWhether"
+        />
       </div>
       <div class="mt-3">
         <RouterLink to="/group/create">
