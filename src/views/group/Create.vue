@@ -74,9 +74,10 @@ const createButtonClick = () => {
         }
       )
     },
-    () => {
-      // TODO teamName 중복되어 그룹생성 실패한 경우 에러처리
-      alert('해당 그룹명이 이미 존재합니다')
+    (err) => {
+      if (err.response.status == 409) {
+        alert('해당 그룹명이 이미 존재합니다')
+      }
       modal.create = false
     }
   )
@@ -101,7 +102,6 @@ const imgUpload = (event) => {
     v-if="modal.invite"
     @invite="modal.invite = false"
     @modal-close="modal.invite = false"
-    type="create"
     v-model:memberList="memberList"
   />
   <!-- Modal 2 -->
