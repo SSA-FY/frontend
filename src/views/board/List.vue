@@ -1,19 +1,20 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import createBoardAPI from '@/apis/board'
 import NavBar from '@/components/common/NavBar.vue'
 import TopBackward from '@/components/vote/vote/TopBackward.vue'
 
+const route = useRoute()
 const boardAPI = createBoardAPI()
-const teamId = ref(1)
+const teamName = ref(route.query.name)
 const boardListPage = ref(0)
 const dailyBoardList = ref(new Array())
 watch(
-  teamId,
+  boardListPage,
   () => {
     boardAPI.getBoardList(
-      teamId.value,
+      teamName.value,
       boardListPage.value, //page
       ({ data }) => {
         if (data == null) {
