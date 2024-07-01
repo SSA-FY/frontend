@@ -3,9 +3,9 @@ import { lambdaAxios } from '@/utils/axios'
 const createVoteAPI = () => {
   const voteAxios = lambdaAxios()
   return {
-    createVote: (teamId, formData, success, fail) => {
+    createVote: (teamName, formData, success, fail) => {
       voteAxios
-        .post(`/vote?teamId=${teamId}`, formData, {
+        .post(`/vote?teamName=${teamName}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -13,11 +13,11 @@ const createVoteAPI = () => {
         .then(success)
         .catch(fail)
     },
-    getVoteList: (teamId, success, fail) => {
-      voteAxios.get(`/vote/list`, { params: { teamId } }).then(success).catch(fail)
+    getVoteList: (teamName, success, fail) => {
+      voteAxios.get(`/vote/list`, { params: { teamName } }).then(success).catch(fail)
     },
-    getMemberItems: (teamId, success, fail) => {
-      voteAxios.get(`/membership/team/${teamId}`).then(success).catch(fail)
+    getMemberItems: (teamName, success, fail) => {
+      voteAxios.get(`/team/member`, { params: { teamName } }).then(success).catch(fail)
     },
     getMemberResultItems: (voteId, success, fail) => {
       voteAxios.get(`/vote/${voteId}`).then(success).catch(fail)
