@@ -59,19 +59,24 @@ const myName = reactive({ current: '', new: '' })
 
 const changeName = () => {
   console.log(myName)
-  // TODO: patch 에러 해결
   if (myName.new.length > 0) {
-    console.log('이름변경!')
-
     groupAPI.changeMyname(
-      myName.new,
-      teamName,
+      {
+        nickname: myName.new,
+        teamName: teamName
+      },
       (res) => {
-        console.res
+        if (group.managerTag == myTag) {
+          group.managerName = myName.new
+        }
+        myName.current = myName.new
+        myName.new = ''
+        check.editing = false
       },
       (err) => {
-        console.log(err)
-        check.impossible = true
+        // TODO 중복닉네임 체크 에러 추가하기
+        console.log('에러 >> ' + err)
+        // check.impossible = true
       }
     )
   }
@@ -110,29 +115,25 @@ const modal = reactive({ invite: false, leave: false })
 const check = reactive({ editing: false, impossible: false, single: false, simple: false })
 const buttonClick = () => {
   router.push({
-    path: '/boards'
-    // TODO: group 관련 정보 넘겨주기
+    path: '/boards',
+    query: { name: group.name }
   })
 }
 const leaveGroup = () => {
-  // TODO: group 나가기 기능 구현
   modal.leave = false
-
-  if (group.managerTag == myTag && memberList.lengt > 0) {
-    modal.simple = true
-  } else {
-    groupAPI.leaveGroup(
-      teamName,
-      () => {
-        router.push({
-          path: '/group'
-        })
-      },
-      (err) => {
-        console.log(err)
-      }
-    )
-  }
+  groupAPI.leaveGroup(
+    teamName,
+    () => {
+      router.push({
+        path: '/group'
+      })
+    },
+    (err) => {
+      console.log(err)
+      // TODO : 에러코드 응답번호 확인하기
+      // modal.simple = true
+    }
+  )
 }
 </script>
 
@@ -147,6 +148,7 @@ const leaveGroup = () => {
       }
     "
     @modal-close="modal.invite = false"
+    :type="group.name"
   />
   <!-- Modal 2 -->
   <SingleOkModal v-if="modal.single" @ok="modal.single = false">
@@ -233,7 +235,7 @@ const leaveGroup = () => {
           src="/src/assets/imgs/addMember.svg"
           @click="modal.invite = true"
         />
-        <div class="s-name" v-for="m in memberList" key="member">
+        <div class="s-name" v-for="m in memberList" key="m">
           {{ m.nickname }} @{{ m.memberTag }}
         </div>
       </div>

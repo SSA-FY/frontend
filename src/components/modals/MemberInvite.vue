@@ -3,7 +3,7 @@
     v-if="modal.invite"
     @invite="추가 누른후 동작할 함수" 
     @modal-close="모달닫기 함수"
-    type="create혹은detail"
+    type="undefine(create)혹은teamName"
     v-model:memberList="memberList"
   />
 -->
@@ -21,7 +21,7 @@ const memberList = defineModel('memberList', {
   type: Array
 })
 const { type } = defineProps(['type'])
-
+const emit = defineEmits(['invite'])
 // =================================================
 
 const search = (value) => {
@@ -40,9 +40,7 @@ const search = (value) => {
         })
       })
     },
-    () => {
-      console.log('search error')
-    }
+    () => {}
   )
 }
 const addThis = (value) => {
@@ -61,7 +59,7 @@ const member = useMemberStore()
 const myId = member.memberId
 
 const finish = () => {
-  if (type == 'create') {
+  if (type == undefined) {
     const members = JSON.stringify(memberList.value)
     for (let i = pickList.length - 1; i >= 0; i--) {
       const e = pickList[i]
@@ -70,8 +68,16 @@ const finish = () => {
       }
     }
     pickList.length = 0
-  } else if (type == 'detail') {
-    // TODO: memberList에 있는 사람인지 판단하고 API추가
+    emit('invite')
+  } else {
+    inviteAPI.createInvites(
+      type,
+      pickList.map((member) => member.id),
+      () => {
+        emit('invite')
+      },
+      () => {}
+    )
     pickList.length = 0
   }
 }
@@ -101,17 +107,7 @@ const finish = () => {
         </div>
       </div>
       <div class="s-bottom">
-        <button
-          class="s-blueButton"
-          @click="
-            () => {
-              finish()
-              $emit('invite')
-            }
-          "
-        >
-          추가
-        </button>
+        <button class="s-blueButton" @click="finish">추가</button>
         <button class="s-cancelButton" @click="$emit('modalClose')">취소</button>
       </div>
     </div>

@@ -1,47 +1,117 @@
 <script setup>
-import pictureIcon from '@/assets/imgs/picture.svg'
+import createGroupAPI from '@/apis/group.js'
+
 import TopBackward from '@/components/TopBackward.vue'
 import BottomOrangeButton from '@/components/BottomOrangeButton.vue'
 import ConfirmModal from '@/components/modals/Confirm.vue'
 
-const groupId = window.history.state.id
-
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-// TODO: api로 그룹정보 받아오기
-const groupInfo = reactive({
-  name: '싸피 11반 11기',
-  desc: '안녕하세요! 싸피 11반 11기 투표방입니다!',
-  url: '',
-  leader: '냥냥이@cat'
-})
-// TODO: 멤버가져오기
-const memberList = reactive({
-  myName: '냥냥이@cat',
-  other: [
-    '병익이사칭 @byeong_elk',
-    '최병익 @byeong_e1k',
-    '병익이팬클럽 @byeong_lov2',
-    '병익이팬 @byeong_love',
-    '병익 @byeong_cik',
-    '병익이 @byeong_eik',
-    '윰 @youm_0'
-  ]
-})
-const modal = reactive({ confirm: false })
-// =================================================
-const leaderClick = (e) => {
-  groupInfo.leader = e
-}
-// =================================================
+
 const router = useRouter()
 
-const buttonClick = () => {
-  // TODO: 변경요청
+const teamName = window.history.state.name
+if (teamName == undefined) {
   router.push({
-    path: '/group/detail',
-    state: { id: groupId }
+    path: '/group'
   })
+}
+
+// =================================================
+
+const group = reactive({
+  id: undefined,
+  name: '',
+  desc: '',
+  img: '',
+  previewUrl: '',
+  managerTag: ''
+})
+const groupAPI = createGroupAPI()
+
+groupAPI.getGroupInfo(
+  teamName,
+  (res) => {
+    const groupInfo = res.data
+    group.id = groupInfo.teamId
+    group.name = groupInfo.teamName
+    group.desc = groupInfo.description
+    group.previewUrl = groupInfo.imgUrl
+    group.managerTag = groupInfo.managerTag
+    getMembers()
+  },
+  () => {
+    console.log('error')
+  }
+)
+
+// =================================================
+
+const memberList = reactive([])
+
+const getMembers = async () => {
+  groupAPI.getMembers(
+    teamName,
+    (res) => {
+      const members = res.data
+      members.forEach((m) => {
+        memberList.push(m)
+      })
+    },
+    (err) => {
+      console.log(err)
+    }
+  )
+}
+
+const leaderClick = (e) => {
+  group.managerTag = e
+}
+// =================================================
+const modal = reactive({ confirm: false })
+
+const buttonClick = () => {
+  // 그룹 변경 요청
+  const blob = new Blob(
+    [
+      JSON.stringify({
+        teamId: group.id,
+        teamName: group.name,
+        description: group.desc,
+        managerTag: group.managerTag
+      })
+    ],
+    { type: 'application/json' }
+  )
+
+  const formData = new FormData()
+  formData.append('dto', blob)
+  formData.append('img', group.img)
+
+  groupAPI.updateGroup(
+    formData,
+    () => {
+      router.push(`/group/detail?name=${group.name}`)
+    },
+    (err) => {
+      if (err.response.status == 409) {
+        alert('해당 그룹명이 이미 존재합니다')
+      }
+      modal.confirm = false
+    }
+  )
+}
+const imgUpload = (event) => {
+  const input = event.target
+  if (input.files) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      group.previewUrl = e.target.result
+    }
+    group.img = input.files[0]
+
+    reader.readAsDataURL(input.files[0])
+  }
 }
 </script>
 
@@ -60,17 +130,24 @@ const buttonClick = () => {
 
   <!-- Page -->
   <TopBackward></TopBackward>
-  <form @submit.prevent>
+  <form @submit.prevent v-if="group.id != undefined">
     <div class="s-top">
-      <img class="s-groupImg" />
-      <img class="s-pictureSvg" :src="pictureIcon" />
+      <label for="upload" class="s-label"><img class="s-groupImg" :src="group.previewUrl" /></label>
+      <input
+        type="file"
+        id="upload"
+        accept="image/png, image/gif, image/jpeg"
+        hidden
+        @change="imgUpload"
+      />
+      <!-- <img class="s-pictureSvg" src="/src/assets/imgs/picture.svg" /> -->
     </div>
     <div class="s-body">
       <label class="s-myLabel" for="inputGroupName">그룹명</label>
       <input
         type="text"
         class="s-myInput"
-        v-model="groupInfo.name"
+        v-model="group.name"
         id="inputGroupName"
         maxlength="100"
       />
@@ -78,33 +155,49 @@ const buttonClick = () => {
       <input
         type="text"
         class="s-myInput"
-        v-model="groupInfo.desc"
+        v-model="group.desc"
         id="inputGroupDesc"
         maxlength="100"
       />
       <label class="s-myLabel" for="inputNickName">그룹장</label>
 
       <select class="s-select" @change="leaderClick($event.target.value)" id="leader">
-        <option selected>{{ memberList.myName }}</option>
-        <option v-for="member in memberList.other" :key="member">{{ member }}</option>
+        <option
+          :selected="group.managerTag == m.memberTag"
+          v-for="m in memberList"
+          :value="m.memberTag"
+        >
+          {{ m.nickname }} @{{ m.memberTag }}
+        </option>
       </select>
     </div>
   </form>
-  <BottomOrangeButton @click="groupInfo.name ? (modal.confirm = true) : ''"
-    >완료</BottomOrangeButton
-  >
+  <BottomOrangeButton @click="group.name ? (modal.confirm = true) : ''">완료</BottomOrangeButton>
 </template>
 
 <style scoped>
 .s-top {
   position: relative;
 }
-.s-groupImg {
+.s-label {
+  cursor: pointer;
   /* 16:9 */
   width: 100%;
   height: 0;
   padding-top: 56.25%;
-  background-color: #d9d9d9;
+
+  background-color: #fdfdfd;
+  filter: brightness(1);
+}
+.s-label:hover {
+  filter: brightness(0.9);
+}
+.s-groupImg {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  object-fit: contain;
+  max-height: 100%;
 }
 .s-pictureSvg {
   position: absolute;
