@@ -1,17 +1,19 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import Suggestions from '@/components/vote/create/Suggestions.vue'
 import VoteButton from '@/components/vote/create/VoteButton.vue'
 import createVoteAPI from '@/apis/vote.js'
 import NavBar from '@/components/common/NavBar.vue'
 import TopBackward from '@/components/vote/vote/TopBackward.vue'
 
+const route = useRoute()
+
+const teamName = ref(route.query.name)
 const imgUrl = ref('https://storage.lambda.myeverlastinglove.com/vote/Default.jpeg')
 const imgFile = ref(null)
 const selectedSuggestion = ref('')
 const question = ref('')
-const teamId = ref('')
 
 const change = (payload) => {
   selectedSuggestion.value = payload
@@ -26,7 +28,6 @@ const moveGroupPage = () => {
 }
 
 const createVote = () => {
-  teamId.value = 1
   const formData = new FormData()
   if (imgFile.value != null) {
     formData.append('img', imgFile.value)
@@ -41,7 +42,7 @@ const createVote = () => {
     return
   }
   voteAPI.createVote(
-    teamId.value,
+    teamName.value,
     formData,
     () => {
       moveGroupPage()

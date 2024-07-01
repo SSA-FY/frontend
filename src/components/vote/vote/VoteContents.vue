@@ -2,8 +2,10 @@
 import { defineProps, defineEmits, ref } from 'vue'
 import { useRouter } from 'vue-router'
 const props = defineProps({
-  voteList: Array
+  voteList: Array,
+  name: String
 })
+const teamName = ref(props.name)
 const emit = defineEmits(['changeVote'])
 const currentIdx = ref(0)
 const transitioning = ref(false)
@@ -32,7 +34,7 @@ const wait = () => {
 }
 const router = useRouter()
 const createVote = () => {
-  router.push('/vote/create')
+  router.push(`/vote/create?name=${teamName.value}`)
 }
 </script>
 

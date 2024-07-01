@@ -4,7 +4,10 @@ import MemberResultItem from '@/components/vote/vote/MemberResultItem.vue'
 import { ref, watch, reactive } from 'vue'
 import createVoteAPI from '@/apis/vote.js'
 
-const props = defineProps(['vote'])
+const props = defineProps({
+  vote: Object,
+  name: String
+})
 const vote = reactive({
   voteId: null,
   content: '',
@@ -13,7 +16,7 @@ const vote = reactive({
 })
 const voteAPI = createVoteAPI()
 
-const teamId = ref(1) //props로 받아야함
+const teamName = ref(props.name)
 const votees = ref([])
 const voteeResults = ref([])
 
@@ -53,7 +56,7 @@ const getMemberResultList = () => {
 
 const getMemberItemList = () => {
   voteAPI.getMemberItems(
-    teamId.value,
+    teamName.value,
     ({ data }) => {
       votees.value = data
     },

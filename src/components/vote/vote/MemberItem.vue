@@ -100,8 +100,7 @@ const doVote = () => {
 
 <template>
   <div class="member-item d-flex align-items-center p-2 m-2" @click="doVote">
-    <!-- :src 현재 votee에 imgUrl이 없음 /membership/team/{teamId}로 넘어오는 값에 프로필 이미지 없음 수정되면 추가하기 -->
-    <img :src="votee.imgUrl" alt="" class="avatar rounded-circle mr-2" />
+    <img :src="votee.profileImgUrl" alt="" class="avatar rounded-circle mr-2" />
     <div>
       <div class="name ps-2">{{ votee.nickname }}</div>
       <div class="handle text-muted ps-2">@{{ votee.memberTag }}</div>

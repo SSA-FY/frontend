@@ -8,16 +8,20 @@ import NoVote from '@/components/vote/vote/NoVote.vue'
 import createVoteAPI from '@/apis/vote.js'
 import NavBar from '@/components/common/NavBar.vue'
 import Confetti from '@/components/Confetti.vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const voteAPI = createVoteAPI()
-const teamId = ref(1) //props로 넘어와야 함
+const teamName = ref(route.query.name)
+console.log(teamName.value)
 const currentVote = ref(null)
 const voteList = ref([])
 const idx = ref(0)
 const len = computed(() => voteList.value.length)
 const getVoteList = () => {
+  console.log(teamName.value)
   voteAPI.getVoteList(
-    teamId.value,
+    teamName.value,
     ({ data }) => {
       voteList.value = data
       if (len.value > 0) {
@@ -30,7 +34,7 @@ const getVoteList = () => {
   )
 }
 watch(
-  teamId,
+  teamName,
   () => {
     getVoteList()
   },
@@ -61,10 +65,10 @@ watch(idx, () => {
       <NoVote />
     </template>
     <template v-else>
-      <VoteContents :voteList="voteList" @change-vote="change" />
+      <VoteContents :voteList="voteList" @change-vote="change" :name="teamName" />
       <hr />
       <template v-if="!isLast">
-        <MemberList :vote="currentVote" />
+        <MemberList :vote="currentVote" :name="teamName" />
       </template>
       <template v-else>
         <Confetti class="position-fixed w-100 h-100 top-0 zindex-100" />
