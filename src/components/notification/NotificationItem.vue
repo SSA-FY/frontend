@@ -55,7 +55,7 @@ const info = computed(() => {
 
 <template>
   <RouterLink :to="info.link" style="text-decoration: none; color: inherit">
-    <div class="notification-item p-3 mb-3 border-bottom d-flex justify-content-between">
+    <div class="p-3 mb-3 border-bottom d-flex justify-content-between">
       <div>
         <div class="d-flex align-items-center mb-0">
           <span class="title">{{ info.title }}</span>
