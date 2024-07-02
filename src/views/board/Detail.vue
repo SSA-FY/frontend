@@ -6,6 +6,7 @@ import createCommentAPI from '@/apis/comment'
 import createBoardAPI from '@/apis/board'
 import NavBar from '@/components/common/NavBar.vue'
 import TopBackward from '@/components/vote/vote/TopBackward.vue'
+import InfiniteLoading from 'v3-infinite-loading'
 
 const props = defineProps({
   boardId: String
@@ -13,8 +14,9 @@ const props = defineProps({
 const commentAPI = createCommentAPI()
 const boardAPI = createBoardAPI()
 
-const boardResult = ref(Object)
-const commentList = ref(Object)
+const hasNext = ref(true)
+const boardResult = ref({ content: null })
+const commentList = ref(null)
 const detailPage = ref(0)
 const commentPage = ref(0)
 
@@ -34,11 +36,22 @@ const getBoardDetail = () => {
 
 //투표에 대한 코멘트 페이징으로 가져오기
 const getCommentList = () => {
+  console.log(commentPage.value)
   commentAPI.getComments(
     props.boardId,
     commentPage.value,
     ({ data }) => {
-      commentList.value = data
+      if (data.length == 0) {
+        hasNext.value = false
+        return
+      }
+      if (commentList.value == null) {
+        commentList.value = data
+      } else {
+        commentList.value = [...commentList.value, ...data]
+      }
+      commentPage.value++
+
       console.log('comment', data)
     },
     () => {
@@ -55,19 +68,10 @@ watch(
   { immediate: true }
 )
 
-watch(
-  commentPage,
-  () => {
-    getCommentList()
-  },
-  { immediate: true }
-)
 const reload = () => {
-  if (commentPage.value == 0) {
-    getCommentList()
-  } else {
-    commentPage.value = 0
-  }
+  commentPage.value = 0
+  commentList.value = null
+  hasNext.value = true
 }
 
 const writeContent = ref(null)
@@ -87,6 +91,12 @@ const writeComment = () => {
       }
     )
   }
+}
+const nextCommentPage = () => {
+  if (!hasNext.value) {
+    return
+  }
+  getCommentList()
 }
 </script>
 
@@ -114,6 +124,7 @@ const writeComment = () => {
       <div v-for="(comment, index) in commentList" :key="index">
         <Comment :comment="comment" @reload-comment="reload()" />
       </div>
+      <InfiniteLoading @infinite="nextCommentPage" />
     </div>
 
     <div class="d-flex align-items-center">
@@ -130,5 +141,10 @@ const writeComment = () => {
 <style scoped>
 .container {
   min-height: 90vh;
+}
+
+.comments {
+  overflow-y: auto;
+  max-height: 40vh;
 }
 </style>
