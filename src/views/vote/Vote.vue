@@ -62,7 +62,7 @@ watch(idx, () => {
   <TopBackward></TopBackward>
   <div class="container">
     <template v-if="voteList.length == 0">
-      <NoVote />
+      <NoVote :name="teamName" />
     </template>
     <template v-else>
       <VoteContents :voteList="voteList" @change-vote="change" :name="teamName" />
