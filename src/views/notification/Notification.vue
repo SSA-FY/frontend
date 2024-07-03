@@ -1,3 +1,76 @@
+<script setup>
+import { computed, onMounted, reactive, ref } from 'vue'
+import NavBar from '@/components/common/NavBar.vue'
+import NotificationItem from '@/components/notification/NotificationItem.vue'
+import { lambdaAxios } from '@/utils/axios'
+import InfiniteLoading from 'v3-infinite-loading'
+
+const list = ref([])
+const hasNext = ref(true)
+
+const time = reactive({
+  timeMap: new Map()
+})
+
+const dates = computed(() => Array.from(time.timeMap.keys()))
+const getNotis = (date) => {
+  return time.timeMap.get(date)?.slice().reverse() || []
+}
+
+const reversedDates = computed(() => {
+  return [...dates.value].sort().reverse()
+})
+
+const lambda = lambdaAxios()
+let page = 0
+// onMounted(() => {
+//   lambda
+//     .get(`/notification/list?page=${page}`)
+//     .then((res) => {
+//       console.log('first')
+//       if (res.data.data.length > 0) page++
+//       if (res.data.data.length != 10) hasNext.value = false
+//       list.value = res.data.data
+//       list.value.forEach((noti) => {
+//         let date = noti.timestamp.split(' ')[0]
+//         if (!time.timeMap.has(date)) {
+//           time.timeMap.set(date, [])
+//         }
+//         time.timeMap.get(date).push(noti)
+//       })
+//       console.log(time.timeMap)
+//     })
+//     .catch((error) => {
+//       console.error(error)
+//     })
+// })
+
+const load = () => {
+  if (!hasNext.value) return
+  console.log(page + 'second')
+  lambda
+    .get(`/notification/list?page=${page}`)
+    .then((res) => {
+      console.log(page)
+      if (res.data.data.length > 0) page++
+      if (res.data.data.length != 10) hasNext.value = false
+      console.log(res.data.data)
+      list.value = res.data.data
+      list.value.forEach((noti) => {
+        let date = noti.timestamp.split(' ')[0]
+        if (!time.timeMap.has(date)) {
+          time.timeMap.set(date, [])
+        }
+        time.timeMap.get(date).push(noti)
+      })
+      console.log(time.timeMap)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
+</script>
+
 <template>
   <div class="container">
     <div class="text-left mt-5 ms-4 main-title">
@@ -21,52 +94,10 @@
         </div>
       </div>
     </div>
+    <InfiniteLoading @infinite="load"></InfiniteLoading>
     <NavBar></NavBar>
   </div>
 </template>
-
-<script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
-import NavBar from '@/components/common/NavBar.vue'
-import NotificationItem from '@/components/notification/NotificationItem.vue'
-import { lambdaAxios } from '@/utils/axios'
-
-const list = ref([])
-
-const time = reactive({
-  timeMap: new Map()
-})
-
-const dates = computed(() => Array.from(time.timeMap.keys()))
-const getNotis = (date) => {
-  return time.timeMap.get(date)?.slice().reverse() || []
-}
-
-const reversedDates = computed(() => {
-  return [...dates.value].sort().reverse()
-})
-
-const lambda = lambdaAxios()
-onMounted(() => {
-  lambda
-    .get('/notification/list?page=0')
-    .then((res) => {
-      console.log(res.data.data)
-      list.value = res.data.data
-      list.value.forEach((noti) => {
-        let date = noti.timestamp.split(' ')[0]
-        if (!time.timeMap.has(date)) {
-          time.timeMap.set(date, [])
-        }
-        time.timeMap.get(date).push(noti)
-      })
-      console.log(time.timeMap)
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-})
-</script>
 
 <style scoped>
 .container {
