@@ -4,15 +4,15 @@ import LogoText from '@/components/logos/LogoText.vue'
 import Kakao from '@/components/logos/Kakao.vue'
 import Google from '@/components/logos/Google.vue'
 import Naver from '@/components/logos/Naver.vue'
+import { useRouter } from 'vue-router'
 
 const { VITE_API_BASE_URL } = import.meta.env
 
 // 개발용 시작
 import Arrow from '@/components/icons/Arrow.vue'
 import { ref } from 'vue'
-
 const members = ref([])
-
+const router = useRouter()
 lambdaAxios()
   .get(`/token/member`)
   .then((res) => {
