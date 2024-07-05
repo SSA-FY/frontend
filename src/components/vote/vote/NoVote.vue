@@ -3,8 +3,13 @@ import { useRouter } from 'vue-router'
 import Finish from '@/components/vote/finish/Finish.vue'
 
 const router = useRouter()
+
+const props = defineProps({
+  name: String
+})
+
 const createVote = () => {
-  router.push('/vote/create')
+  router.push(`/vote/create?name=${props.name}`)
 }
 </script>
 

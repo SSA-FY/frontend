@@ -19,13 +19,20 @@ console.log(props.voteWhether)
 </script>
 
 <template>
-  <RouterLink
-    class=""
-    style="text-decoration: none; color: inherit"
-    :to="{ path: '/group/detail', query: { name: props.name } }"
-  >
-    <div :class="['d-flex', 'align-items-center', 'p-2', 'mb-2']">
+  <div :class="['d-flex', 'align-items-center', 'p-2', 'mb-2']">
+    <RouterLink
+      class=""
+      style="text-decoration: none; color: inherit"
+      :to="{ path: '/group/detail', query: { name: props.name } }"
+    >
       <img :src="imageSrc" class="rounded-circle me-3" alt="Group Image" width="60" height="60" />
+    </RouterLink>
+
+    <RouterLink
+      class="d-flex flex-grow-1"
+      style="text-decoration: none; color: inherit"
+      :to="{ path: '/vote', query: { name: props.name } }"
+    >
       <div
         :class="[
           'group-item',
@@ -39,8 +46,8 @@ console.log(props.voteWhether)
       >
         <span>{{ name }}</span>
       </div>
-    </div>
-  </RouterLink>
+    </RouterLink>
+  </div>
 </template>
 
 <style scoped>
