@@ -71,7 +71,7 @@ watch(idx, () => {
         <MemberList :vote="currentVote" :name="teamName" />
       </template>
       <template v-else>
-        <Confetti class="position-fixed w-100 h-100 top-0 zindex-100" />
+        <Confetti class="position-fixed w-100 h-100 zindex-100 top-25" />
         <Finish />
       </template>
     </template>
@@ -81,5 +81,8 @@ watch(idx, () => {
 <style scoped>
 .container {
   min-height: 90vh;
+}
+.top-25 {
+  top: 25px;
 }
 </style>

@@ -7,7 +7,15 @@ const todayInfo = ref(Object)
 const getTodayVoteInfo = () => {
   voteAPI.getTodayInfo(
     ({ data }) => {
-      todayInfo.value = data
+      if (data) {
+        todayInfo.value = data
+      } else {
+        todayInfo.value = {
+          totalPoint: 0,
+          voteInfoCnt: 0,
+          opinionCnt: 0
+        }
+      }
     },
     () => {
       console.log('오늘의 투표 정보를 가져오는데 실패했습니다.')
