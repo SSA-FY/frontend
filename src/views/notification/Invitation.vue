@@ -1,85 +1,155 @@
 <script setup>
+import createGroupAPI from '@/apis/group.js'
+
 import BottomOrangeButton from '@/components/BottomOrangeButton.vue'
 import TopBackward from '@/components/TopBackward.vue'
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
-// =================================================
-// TODO: api로 그룹정보 받아오기
-const groupInfo = reactive({
-  id: 1,
-  name: '싸피 11반 11기',
-  desc: '안녕하세요! 싸피 11반 11기 투표방입니다!',
-  leader: '냥냥이@cat',
-  url: ''
-})
-const myName = reactive({ myName: '' })
-const memberList = reactive([
-  '병익이사칭 @byeong_elk',
-  '최병익 @byeong_e1k',
-  '병익이팬클럽 @byeong_lov2',
-  '병익이팬 @byeong_love',
-  '병익 @byeong_cik',
-  '병익이 @byeong_eik',
-  '윰 @youm_0'
-])
-// =================================================
-const check = reactive({ impossible: false })
+import SimpleOkModal from '@/components/modals/SimpleOk.vue'
+
+import { reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const route = useRoute()
 const router = useRouter()
-const buttonClick = () => {
-  // TODO: 닉네임 중복처리하고 api보내기
-  check.impossible = true
-  // router.push({
-  //   path: '/notification'
-  // })
+const lambda = lambdaAxios()
+const teamName = route.query.name
+if (teamName == undefined) {
+  router.push({
+    path: '/group'
+  })
 }
+
+const group = reactive({
+  id: undefined,
+  name: '',
+  desc: '',
+  img: '',
+  managerTag: '',
+  managerName: ''
+})
+const groupAPI = createGroupAPI()
+
+groupAPI.getGroupInfo(
+  teamName,
+  (res) => {
+    const groupInfo = res.data
+    group.id = groupInfo.teamId
+    group.name = groupInfo.teamName
+    group.desc = groupInfo.description
+    group.img = groupInfo.imgUrl
+    group.managerTag = groupInfo.managerTag
+    group.managerName = groupInfo.managerName
+    getMembers()
+  },
+  () => {
+    console.log('error')
+  }
+)
+
+import { lambdaAxios } from '@/utils/axios'
+const myName = ref('')
+
+const buttonClick = () => {
+  console.log(modal)
+  if (myName.value.length > 0) {
+    console.log(myName.value)
+    lambda
+      .post('/invitation/accept', { teamName: group.name, nickname: myName.value })
+      .then(() => {
+        modal.sucess = true
+        router.push({
+          path: '/group'
+        })
+      })
+      .catch((err) => {
+        console.error(err)
+        modal.duplicated = true
+      })
+  }
+}
+// =================================================
+
+const memberList = reactive([])
+
+const getMembers = async () => {
+  groupAPI.getMembers(
+    teamName,
+    (res) => {
+      const members = res.data
+      members.forEach((m) => {
+        if (m.memberTag != group.managerTag) {
+          memberList.push(m)
+          console.log('member ' + m)
+        }
+      })
+    },
+    (err) => {
+      console.log(err)
+    }
+  )
+}
+
+const nicknameDuplicatedHandler = () => {
+  modal.duplicated = false
+  myName.value = ''
+}
+
+// =================================================
+const modal = reactive({ duplicated: false })
 </script>
 
 <template>
+  <SimpleOkModal v-if="modal.duplicated" @modal-close="nicknameDuplicatedHandler"
+    >이미 사용중인 닉네임 입니다. 다른 닉네임을 입력해주세요</SimpleOkModal
+  >
+  <!-- Page -->
   <TopBackward></TopBackward>
-  <form @submit.prevent>
+  <form @submit.prevent v-if="group.id != undefined">
     <div class="s-top">
-      <!-- TODO: 사진 URL넣기 -->
-      <img class="s-groupImg" />
+      <div class="s-imgContainer"><img class="s-myImg" :src="group.img" /></div>
       <div class="s-title">
-        <h3 class="s-groupName">{{ groupInfo.name }}</h3>
-        <h5 class="s-groupDesc">{{ groupInfo.desc }}</h5>
+        <h3 class="s-groupName">{{ group.name }}</h3>
+        <h5 class="s-desc">{{ group.desc }}</h5>
       </div>
     </div>
     <div class="s-body">
-      <div class="s-orangeText" for="inputGroupName">그룹장</div>
-      <div class="s-name">
-        {{ groupInfo.leader }}
+      <div class="s-myLabel" for="inputGroupName">그룹장</div>
+      <div class="s-me">
+        <div class="s-name">{{ group.managerName }} @{{ group.managerTag }}</div>
       </div>
-      <label class="s-orangeText" for="inputNickName">내 이름</label>
+      <div class="s-myLabel" for="inputGroupDesc">내이름</div>
+      <input class="s-nameInput" v-model="myName" placeholder="닉네임을 입력하세요" />
+      <div class="s-myLabel" for="inputGroupDesc">멤버</div>
       <div>
-        <input
-          type="text"
-          class="s-myInput"
-          v-model="myName.myName"
-          id="inputName"
-          maxlength="10"
-        />
-        <div v-if="check.impossible" class="s-redLine">이미 존재하는 닉네임입니다</div>
-      </div>
-      <div class="s-orangeText" for="inputGroupDesc">멤버</div>
-      <div>
-        <div class="s-name" v-for="member in memberList" key="member">{{ member }}</div>
+        <div class="s-name" v-for="m in memberList" :key="m">
+          {{ m.nickname }} @{{ m.memberTag }}
+        </div>
       </div>
     </div>
   </form>
-  <BottomOrangeButton @click="buttonClick">참여하기</BottomOrangeButton>
+
+  <BottomOrangeButton @click="buttonClick"> 참여하기</BottomOrangeButton>
 </template>
 
 <style scoped>
 .s-top {
   position: relative;
 }
-.s-groupImg {
+.s-imgContainer {
+  position: relative;
   /* 16:9 */
   width: 100%;
   height: 0;
   padding-top: 56.25%;
-  background-color: #d9d9d9;
+  border: solid 1px #d9d9d9;
+  border-left: none;
+  background-color: #fdfdfd;
+}
+.s-myImg {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  object-fit: contain;
+  max-height: 100%;
 }
 .s-title {
   position: absolute;
@@ -87,30 +157,36 @@ const buttonClick = () => {
   left: 20px;
   z-index: 2;
 }
-.s-myInput {
-  margin: 2px 0 4px 0;
-  border: #d0d0d0 solid 1px;
-  padding: 2px 8px;
-  border-radius: 4px;
+.s-me {
+  position: relative;
+  display: inline-block;
   width: 100%;
-}
-.s-myInput:focus {
-  outline: none;
-  border: #ff7a00 solid 1px;
 }
 .s-redLine {
   color: #e5503c;
   font-size: 12px;
   padding: 0 0 0 8px;
-  margin-bottom: 8px;
 }
 .s-groupName {
   font-size: 32px;
   font-weight: 500;
 }
-.s-groupDesc {
+.s-desc {
   font-size: 24px;
   font-weight: 500;
+}
+
+.s-pencilSvg {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+.s-edit {
+  position: absolute;
+  right: 10px;
+  top: 0px;
+  cursor: pointer;
 }
 .s-body {
   grid-template-columns: 80px auto;
@@ -119,7 +195,7 @@ const buttonClick = () => {
   flex-direction: column;
   padding: 24px 20px 10px 20px;
 }
-.s-orangeText {
+.s-myLabel {
   text-align: center;
   color: #ff7a00;
   font-weight: 600;
@@ -128,10 +204,29 @@ const buttonClick = () => {
   line-height: 32px;
 }
 .s-name {
-  margin: 3px 0 6px 0;
+  margin: 6px 0 6px 0;
   border: none;
   border-bottom: #d0d0d0 solid 1px;
   padding: 2px 8px;
   position: relative;
+}
+.s-nameInput {
+  outline: none;
+  width: 100%;
+  margin: 6px 0 6px 0;
+  border: none;
+  border-bottom: #d0d0d0 solid 1px;
+  padding: 2px 8px;
+}
+.s-nameInput::placeholder {
+  color: #d0d0d0;
+}
+.s-memberSvg {
+  top: 5px;
+  transform: translateX(-5px);
+  float: right;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
 }
 </style>

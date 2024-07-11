@@ -38,7 +38,7 @@ const info = computed(() => {
     case 'Invitation':
       return {
         icon: invitationImg,
-        link: `/notification/invitation?teamname=${props.invitionNotification.teamName}`,
+        link: `/notification/invitation?name=${props.invitionNotification.teamName}`,
         title: '새로운 그룹에 초대되었어요!'
       }
     case 'ExpiredVote':
